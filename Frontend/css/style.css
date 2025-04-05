@@ -1,0 +1,20 @@
+<<<<<<< HEAD
+body {
+  margin: 0;
+  padding-bottom: 60px; /* Platz für Footer */
+}
+
+
+.custom-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #ffa07a; /* DarkSalmon */
+  text-align: center;
+  padding: 10px;
+  color: black;
+  z-index: 1000;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+}
+=======
+>>>>>>> b831f7b9287ba1257985ad518d1a1ead76848ab8
