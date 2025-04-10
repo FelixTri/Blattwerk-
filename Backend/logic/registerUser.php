@@ -1,15 +1,11 @@
 <?php
 header('Content-Type: application/json');
 
-// Temporär zum Debuggen:
-// ini_set('display_errors', 1);
-// error_reporting(E_ALL);
-
-// Anpassung an deine Einstellungen
+// Anpassung an Einstellungen
 $dbHost = 'localhost';
-$dbName = 'blattwerk_shop';  // Dieser Name muss exakt dem deiner Datenbank entsprechen
-$dbUser = 'root';            // Oder dein MySQL-Username
-$dbPass = '';                // Passwort, falls vorhanden
+$dbName = 'blattwerk_shop';  
+$dbUser = 'root';            
+$dbPass = '';                
 
 try {
     // PDO-Verbindung
@@ -24,7 +20,7 @@ try {
     exit;
 }
 
-// 3) JSON-Daten empfangen
+// JSON-Daten empfangen
 $data = json_decode(file_get_contents('php://input'), true);
 if (!$data) {
     echo json_encode([
@@ -34,7 +30,7 @@ if (!$data) {
     exit;
 }
 
-// 4) Pflichtfelder prüfen
+// Pflichtfelder prüfen
 $requiredFields = ['salutation', 'firstName', 'lastName', 'address', 'postalCode', 'city', 'email', 'username', 'password'];
 foreach ($requiredFields as $field) {
     if (empty($data[$field])) {
@@ -46,7 +42,7 @@ foreach ($requiredFields as $field) {
     }
 }
 
-// 5) Daten aus dem Array übernehmen
+//Daten aus dem Array übernehmen
 $salutation  = trim($data['salutation']);
 $firstName   = trim($data['firstName']);
 $lastName    = trim($data['lastName']);
@@ -60,7 +56,7 @@ $paymentInfo = isset($data['paymentInfo']) ? trim($data['paymentInfo']) : '';
 $role        = isset($data['role']) ? trim($data['role']) : 'user';
 $active      = isset($data['active']) ? (int)$data['active'] : 1;
 
-// 6) Prüfen, ob Nutzername oder E-Mail bereits existieren
+//Prüfen, ob Nutzername oder E-Mail bereits existieren
 try {
     $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE email = :email OR username = :username');
     $stmt->execute([
@@ -83,10 +79,10 @@ try {
     exit;
 }
 
-// 7) Passwort hashen
+// Passwort hashen
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-// 8) SQL-Insert
+// SQL-Insert
 try {
     $stmt = $pdo->prepare('
         INSERT INTO users
