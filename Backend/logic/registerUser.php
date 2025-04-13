@@ -1,11 +1,19 @@
 <?php
 header('Content-Type: application/json');
 
+<<<<<<< HEAD
 // Anpassung an deine Einstellungen
 $dbHost = 'localhost';
 $dbName = 'blattwerk_shop';
 $dbUser = 'root';
 $dbPass = '';
+=======
+// Anpassung an Einstellungen
+$dbHost = 'localhost';
+$dbName = 'blattwerk_shop';  
+$dbUser = 'root';            
+$dbPass = '';                
+>>>>>>> 6916f219898ed6fafc1e69a2da279c83afe2b45f
 
 try {
     // PDO-Verbindung
@@ -14,7 +22,7 @@ try {
 } catch (PDOException $e) {
     echo json_encode([
         'success' => false,
-        'message' => 'Datenbankverbindung fehlgeschlagen: ' . $e->getMessage()
+      'message' => 'Datenbankverbindung fehlgeschlagen: ' . $e->getMessage()
     ]);
     exit;
 }
@@ -41,7 +49,11 @@ foreach ($requiredFields as $field) {
     }
 }
 
+<<<<<<< HEAD
 // Daten übernehmen
+=======
+//Daten aus dem Array übernehmen
+>>>>>>> 6916f219898ed6fafc1e69a2da279c83afe2b45f
 $salutation  = trim($data['salutation']);
 $firstName   = trim($data['firstName']);
 $lastName    = trim($data['lastName']);
@@ -53,11 +65,15 @@ $username    = trim($data['username']);
 $password    = $data['password'];
 $paymentInfo = isset($data['paymentInfo']) ? trim($data['paymentInfo']) : '';
 
+<<<<<<< HEAD
 // 🚀 Standardmäßig Benutzerrolle und aktiv setzen
 $role  = 'user';
 $active = 1;
 
 // Prüfen, ob E-Mail oder Benutzername bereits existieren
+=======
+//Prüfen, ob Nutzername oder E-Mail bereits existieren
+>>>>>>> 6916f219898ed6fafc1e69a2da279c83afe2b45f
 try {
     $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE email = :email OR username = :username');
     $stmt->execute([
@@ -83,7 +99,11 @@ try {
 // Passwort hashen
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
+<<<<<<< HEAD
 // Benutzer speichern
+=======
+// SQL-Insert
+>>>>>>> 6916f219898ed6fafc1e69a2da279c83afe2b45f
 try {
     $stmt = $pdo->prepare('
         INSERT INTO users
