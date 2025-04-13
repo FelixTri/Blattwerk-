@@ -16,11 +16,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 🔁 Cart-Zähler immer beim Laden aktualisieren
     updateCartCount();
+
+    // Produktsuchfunktion aktivieren, wenn auf products.html
+    if (window.location.pathname.includes("products.html")) {
+        const searchInput = document.getElementById("product-search");
+        const productList = document.getElementById("product-list");
+
+        if (searchInput && productList) {
+            const fetchProducts = (query = "") => {
+                fetch(`${PATH_PREFIX}/Backend/logic/search_products.php?query=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        productList.innerHTML = "";
+
+                        if (data.length === 0) {
+                            productList.innerHTML = "<p>Keine Produkte gefunden.</p>";
+                            return;
+                        }
+
+                        data.forEach(product => {
+                            const col = document.createElement("div");
+                            col.className = "col";
+                            col.innerHTML = `
+                                <div class="card h-100">
+                                    <img src="${PATH_PREFIX}/Backend/productpictures/${product.image}" class="card-img-top" alt="${product.name}">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${product.name}</h5>
+                                        <p class="card-text">${product.description}</p>
+                                    </div>
+                                </div>`;
+                            productList.appendChild(col);
+                        });
+                    });
+            };
+
+            fetchProducts(); // initial laden
+
+            searchInput.addEventListener("input", () => {
+                fetchProducts(searchInput.value);
+            });
+        }
+    }
 });
 
 // Produkt in Warenkorb legen
 function addToCart(productId) {
-    fetch('${PATH_PREFIX}/Backend/logic/requestHandler.php?action=addToCart', {
+    fetch(`${PATH_PREFIX}/Backend/logic/requestHandler.php?action=addToCart`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: `productId=${productId}`
@@ -44,7 +85,8 @@ function updateCartCount(countFromAdd = null) {
         return;
     }
 
-    fetch(`${PATH_PREFIX}/Backend/logic/requestHandler.php?action=getCartCount`)        .then(res => res.json())
+    fetch(`${PATH_PREFIX}/Backend/logic/requestHandler.php?action=getCartCount`)
+        .then(res => res.json())
         .then(data => setCartBadge(data.count));
 }
 
@@ -84,7 +126,7 @@ function loadCart() {
 
 // Produkt aus dem Cart entfernen
 function removeFromCart(productId) {
-    fetch('${PATH_PREFIX}/Backend/logic/requestHandler.php?action=removeFromCart', {
+    fetch(`${PATH_PREFIX}/Backend/logic/requestHandler.php?action=removeFromCart`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: `productId=${productId}`

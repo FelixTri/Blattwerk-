@@ -1,5 +1,5 @@
 <?php
-session_start(); // Wichtig für den Warenkorb
+session_start(); // Wichtig für den Warenkorb + Login
 require_once __DIR__ . '/../config/dbaccess.php';
 require_once __DIR__ . '/../models/product.class.php';
 
@@ -10,7 +10,6 @@ $action = $_GET['action'] ?? '';
 switch ($action) {
 
     case 'addToCart':
-        session_start();
         $productId = $_POST['productId'] ?? null;
         if ($productId) {
             $_SESSION['cart'][$productId] = ($_SESSION['cart'][$productId] ?? 0) + 1;
@@ -20,19 +19,15 @@ switch ($action) {
         }
         break;
 
-
     case 'getCartCount':
-        session_start();
         echo json_encode(['count' => array_sum($_SESSION['cart'] ?? [])]);
         break;
-            
-            
+
     case 'getCart':
         $cart = $_SESSION['cart'] ?? [];
         $product = new Product();
         $items = $product->getProductsByIds(array_keys($cart));
 
-        // Mengen ergänzen
         foreach ($items as &$item) {
             $item['quantity'] = $cart[$item['id']] ?? 1;
         }
@@ -61,8 +56,23 @@ switch ($action) {
         }
         break;
 
-    case 'getCartCount':
-        echo json_encode(['count' => array_sum($_SESSION['cart'] ?? [])]);
+    case 'getSessionInfo':
+        // Falls Session nicht gesetzt, aber gültige Cookies vorhanden sind:
+        if (!isset($_SESSION['user_id']) && isset($_COOKIE['user_id'], $_COOKIE['user_hash'])) {
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+            $stmt->execute([$_COOKIE['user_id']]);
+            $user = $stmt->fetch();
+
+            if ($user && hash('sha256', $user['password']) === $_COOKIE['user_hash']) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['role'] = $user['role'];
+            }
+        }
+
+        echo json_encode([
+            "user_id" => $_SESSION['user_id'] ?? null,
+            "role" => $_SESSION['role'] ?? "guest"
+        ]);
         break;
 
     default:
