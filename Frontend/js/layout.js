@@ -1,8 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const basePath = window.location.pathname.includes("/sites/") ? "../" : "./";
+    const isInSites = window.location.pathname.includes("/Frontend/sites/");
+    const frontendPath = isInSites ? "../../Frontend/" : "./";
+    const backendPath = isInSites ? "../../Backend/" : "../Backend/";
 
     // Navbar laden
-    fetch(`${basePath}components/navbar.html`)
+    fetch(`${frontendPath}components/navbar.html`)
         .then(res => res.text())
         .then(data => {
             const navbarPlaceholder = document.getElementById("navbar-placeholder");
@@ -12,25 +14,25 @@ document.addEventListener("DOMContentLoaded", () => {
             const nav = navbarPlaceholder.querySelector("ul.navbar-nav");
             if (!nav) return;
 
-            fetch(`${basePath}Backend/logic/requestHandler.php?action=getSessionInfo`)
+            fetch(`${backendPath}logic/requestHandler.php?action=getSessionInfo`)
                 .then(res => res.json())
                 .then(user => {
                     // Standardlinks
                     nav.innerHTML = `
-                        <li class="nav-item"><a class="nav-link" href="${basePath}index.html">Startseite</a></li>
-                        <li class="nav-item"><a class="nav-link" href="${basePath}sites/products.html">Produkte</a></li>
-                        <li class="nav-item"><a class="nav-link" href="${basePath}sites/cart.html">Warenkorb</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Blattwerk/Blattwerk-/Frontend/index.html">Startseite</a></li>
+                        <li class="nav-item"><a class="nav-link" href="${frontendPath}sites/products.html">Produkte</a></li>
+                        <li class="nav-item"><a class="nav-link" href="${frontendPath}sites/cart.html">Warenkorb</a></li>
                     `;
 
                     if (user.role === "admin") {
-                        nav.innerHTML += `<li class="nav-item"><a class="nav-link" href="${basePath}sites/admin.html">Adminbereich</a></li>`;
+                        nav.innerHTML += `<li class="nav-item"><a class="nav-link" href="${frontendPath}sites/admin.html">Adminbereich</a></li>`;
                     }
 
                     if (user.role !== "guest") {
-                        nav.innerHTML += `<li class="nav-item"><a class="nav-link" href="${basePath}Backend/logic/logout.php">Logout</a></li>`;
+                        nav.innerHTML += `<li class="nav-item"><a class="nav-link" href="${backendPath}logic/logout.php">Logout</a></li>`;
                     } else {
-                        nav.innerHTML += `<li class="nav-item"><a class="nav-link" href="${basePath}sites/login.html">Login</a></li>`;
-                        nav.innerHTML += `<li class="nav-item"><a class="nav-link" href="${basePath}sites/register.html">Register</a></li>`;
+                        nav.innerHTML += `<li class="nav-item"><a class="nav-link" href="${frontendPath}sites/login.html">Login</a></li>`;
+                        nav.innerHTML += `<li class="nav-item"><a class="nav-link" href="${frontendPath}sites/register.html">Register</a></li>`;
                     }
                 })
                 .catch(err => {
@@ -39,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
     // Footer laden
-    fetch(`${basePath}components/footer.html`)
+    fetch(`${frontendPath}components/footer.html`)
         .then(res => res.text())
         .then(data => {
             const footerPlaceholder = document.getElementById("footer-placeholder");
