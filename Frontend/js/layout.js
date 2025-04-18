@@ -11,6 +11,32 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!navbarPlaceholder) return;
             navbarPlaceholder.innerHTML = data;
 
+
+            const dropTarget = navbarPlaceholder.querySelector("#cart-dropzone");
+            if (dropTarget) {
+                dropTarget.addEventListener("dragover", (e) => e.preventDefault());
+
+                dropTarget.addEventListener("dragenter", () => {
+                    dropTarget.classList.add("drag-over");
+                });
+
+                dropTarget.addEventListener("dragleave", () => {
+                    dropTarget.classList.remove("drag-over");
+                });
+
+                dropTarget.addEventListener("drop", (e) => {
+                    dropTarget.classList.remove("drag-over");
+
+                    e.preventDefault();
+                    const productId = e.dataTransfer.getData("text/plain");
+                    if (productId) {
+                        addToCart(productId);
+                    }
+                });
+            }
+
+            updateCartCount();
+
             const nav = navbarPlaceholder.querySelector("ul.navbar-nav");
             if (!nav) return;
 

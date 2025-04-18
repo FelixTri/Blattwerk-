@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -12,15 +10,35 @@
     <script defer src="../js/test.js"></script>
     <script defer src="../js/cart.js"></script>
     <script defer src="../js/layout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </head>
 <body>
     <div id="navbar-placeholder"></div>
 
     <main class="container py-5">
-        <div id="cart-items"></div>
-        <div><strong>Gesamtpreis:</strong> <span id="cart-total">/span></div>
-    </main>
+        <h2>Dein Warenkorb</h2>
+        <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Produkt</th>
+                  <th>Menge</th>
+                  <th>Preis</th>
+                  <th>Gesamt</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="cart-items">
+                <!-- Dynamischer Inhalt -->
+              </tbody>
+            </table>
+            <p class="text-end mt-4"><strong>Gesamtpreis: <span id="cart-total">0.00 €</span></strong></p>
+            <div class="text-end mt-4">
+                <button id="order-button" class="btn btn-success">Jetzt bestellen</button>
+            </div>
+          </div>
+      </main>
 
     <div id="footer-placeholder"></div>
 </body>

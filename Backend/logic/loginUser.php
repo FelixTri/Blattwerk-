@@ -2,7 +2,6 @@
 session_start();
 header('Content-Type: application/json');
 
-// Lokale Datenbankverbindung (wie in registerUser.php)
 $dbHost = 'localhost';
 $dbName = 'blattwerk_shop';
 $dbUser = 'root';

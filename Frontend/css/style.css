@@ -15,3 +15,17 @@ body {
   z-index: 1000;
   box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
 }
+
+#cart-dropzone.drag-over {
+  transform: scale(1.2);
+  color: #198754; /* Bootstrap grün */
+}
+
+.product-card[draggable="true"] {
+  cursor: grab;
+}
+.product-card img {
+  pointer-events: none;
+  user-drag: none;
+  -webkit-user-drag: none;
+}
