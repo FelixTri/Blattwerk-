@@ -1,0 +1,94 @@
+<!-- account.html -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <title>Account bearbeiten - Blattwerk</title>
+  <link rel="stylesheet" href="../css/style.css">
+
+  <script src="../js/editAccount.js" defer></script>
+  <script defer src="../js/test.js"></script>
+  <script defer src="../js/cart.js"></script>
+  <script defer src="../js/layout.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+</head>
+<body>
+
+  <!-- Navbar Include -->
+  <div id="navbar-placeholder"></div>
+
+  <div class="container mt-5">
+    <h1 class="mb-4">Account bearbeiten</h1>
+    <form id="editAccountForm">
+      <!-- Allgemeine Daten -->
+      <div class="mb-3">
+        <label for="salutation" class="form-label">Anrede <span class="text-danger">*</span></label>
+        <select id="salutation" name="salutation" class="form-select">
+          <option value="">Bitte wählen</option>
+          <option value="Herr">Herr</option>
+          <option value="Frau">Frau</option>
+          <option value="Divers">Divers</option>
+        </select>
+      </div>
+
+      <!-- Adressdaten -->
+      <div class="mb-3">
+        <label for="address" class="form-label">Straße und Hausnummer <span class="text-danger">*</span></label>
+        <input type="text" id="address" name="address" class="form-control">
+      </div>
+      <div class="mb-3">
+        <label for="postal_code" class="form-label">PLZ <span class="text-danger">*</span></label>
+        <input type="text" id="postal_code" name="postal_code" class="form-control" pattern="\d{4}" title="Bitte vierstellige PLZ eingeben">
+      </div>
+      <div class="mb-3">
+        <label for="city" class="form-label">Ort <span class="text-danger">*</span></label>
+        <input type="text" id="city" name="city" class="form-control">
+      </div>
+
+      <!-- Kontaktdaten & Login -->
+      <div class="mb-3">
+        <label for="email" class="form-label">E-Mail-Adresse <span class="text-danger">*</span></label>
+        <input type="email" id="email" name="email" class="form-control">
+      </div>
+      <div class="mb-3">
+        <label for="username" class="form-label">Benutzername <span class="text-danger">*</span></label>
+        <input type="text" id="username" name="username" class="form-control" readonly>
+      </div>
+
+      <!-- Zahlungsinformationen -->
+      <div class="mb-3">
+        <label for="payment_info" class="form-label">Zahlungsinformationen</label>
+        <input type="text" id="payment_info" name="payment_info" class="form-control" placeholder="z.B. IBAN, Kreditkarte, PayPal-Mail">
+      </div>
+      <button type="submit" class="btn btn-primary">Speichern</button>
+
+    </form>
+
+    <p id="editError" class="text-danger"></p>
+
+  </div>
+
+  <!-- Footer Include -->
+  <div id="footer-placeholder"></div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (user) {
+        ["salutation", "address", "postal_code", "city", "email", "username", "payment_info"].forEach(field => {
+          if (user[field]) {
+            document.getElementById(field).value = user[field];
+          }
+        });
+        document.getElementById("username").readOnly = true; // Username nicht änderbar
+      } else {
+        alert("Bitte melde dich zuerst an.");
+        window.location.href = "../sites/login.html";
+      }
+    });
+  </script>
+
+</body>
+</html>

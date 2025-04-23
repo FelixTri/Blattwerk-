@@ -18,7 +18,6 @@ try {
     exit;
 }
 
-// JSON-Daten empfangen
 $data = json_decode(file_get_contents('php://input'), true);
 if (!$data) {
     echo json_encode([
@@ -32,7 +31,6 @@ $email = $data['email'] ?? '';
 $password = $data['password'] ?? '';
 $remember = $data['remember'] ?? false;
 
-// Benutzer anhand der E-Mail suchen
 try {
     $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
     $stmt->execute([$email]);
@@ -46,7 +44,6 @@ try {
         exit;
     }
 
-    // Optional: Prüfen, ob Nutzer aktiv ist
     if ((int)$user['active'] === 0) {
         echo json_encode([
             'success' => false,
@@ -55,7 +52,6 @@ try {
         exit;
     }
 
-    // Erfolgreich eingeloggt → Session starten
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['role'] = $user['role'];
 
@@ -64,7 +60,12 @@ try {
         setcookie("user_hash", hash('sha256', $user['password']), time() + (86400 * 30), "/");
     }
 
-    echo json_encode(['success' => true]);
+    unset($user['password']);
+
+    echo json_encode([
+        'success' => true,
+        'user' => $user
+    ]);
 
 } catch (PDOException $e) {
     echo json_encode([

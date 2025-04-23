@@ -1,0 +1,191 @@
+Script gestartet: ...Dein TextScript gestartet: 22:13:48
+Script gestartet: 22:13:59
+Script gestartet: 22:15:15
+Script gestartet: 22:16:42
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+)
+
+Script gestartet: 22:17:06
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+)
+
+Script gestartet: 22:17:23
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+)
+
+Script gestartet: 22:19:27
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+)
+
+Script gestartet: 22:20:01
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+)
+
+Script gestartet: 22:20:56
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+    [salutation] => Frau
+    [address] => Pilzgasse 23
+    [postal_code] => 1210
+    [city] => Wien
+    [email] => wi23b034@technikum-wien.at
+    [payment_info] => IBAN
+)
+
+Script gestartet: 22:23:54
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+    [salutation] => Frau
+    [address] => Pilzgasse 23
+    [postal_code] => 1210
+    [city] => Wien
+    [email] => wi23b034@technikum-wien.at
+    [payment_info] => IBAN
+)
+
+Script gestartet: 22:26:41
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+    [salutation] => Frau
+    [address] => Pilzgasse 23
+    [postal_code] => 1210
+    [city] => Wien
+    [email] => wi23b034@technikum-wien.at
+    [payment_info] => IBAN
+)
+
+Script gestartet: 22:43:52
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+    [salutation] => Frau
+    [address] => Pilzgasse 23
+    [postal_code] => 1210
+    [city] => Wien
+    [email] => wi23b034@technikum-wien.at
+    [payment_info] => IBAN
+)
+
+Script gestartet: 22:44:02
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+    [salutation] => Frau
+    [address] => Pilzgasse 21
+    [postal_code] => 1210
+    [city] => Wien
+    [email] => wi23b034@technikum-wien.at
+    [payment_info] => IBAN
+)
+
+Script gestartet: 22:45:00
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+    [salutation] => Frau
+    [address] => Pilzgasse 23
+    [postal_code] => 1210
+    [city] => Wien
+    [email] => wi23b034@technikum-wien.at
+    [payment_info] => IBAN
+)
+
+Script gestartet: 22:48:13
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+    [salutation] => Frau
+    [address] => Pilzgasse 23
+    [postal_code] => 1210
+    [city] => Wien
+    [email] => wi23b034@technikum-wien.at
+    [payment_info] => IBAN
+)
+
+Script gestartet: 22:51:56
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+    [salutation] => Frau
+    [address] => Pilzgasse 23
+    [postal_code] => 1210
+    [city] => Wien
+    [email] => wi23b034@technikum-wien.at
+    [payment_info] => IBAN
+)
+
+Script gestartet: 22:52:20
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+    [salutation] => Frau
+    [address] => Pilzgasse 21
+    [postal_code] => 1210
+    [city] => Wien
+    [email] => wi23b034@technikum-wien.at
+    [payment_info] => IBAN
+)
+
+Script gestartet: 22:52:24
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+    [salutation] => Frau
+    [address] => Pilzgasse 21
+    [postal_code] => 1210
+    [city] => Wien
+    [email] => wi23b034@technikum-wien.at
+    [payment_info] => IBAN
+)
+
+Script gestartet: 22:54:53
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+    [salutation] => Frau
+    [address] => Pilzgasse 23
+    [postal_code] => 1210
+    [city] => Wien
+    [email] => wi23b034@technikum-wien.at
+    [payment_info] => IBAN
+)
+
+Script gestartet: 22:56:00
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+    [salutation] => Frau
+    [address] => Pilzgasse 23
+    [postal_code] => 1210
+    [city] => Wien
+    [email] => wi23b034@technikum-wien.at
+    [payment_info] => IBAN
+)
+
+✅ Update erfolgreich ausgeführt.
+Script gestartet: 22:56:29
+Empfangene Daten: Array
+(
+    [username] => wi23b034
+    [salutation] => Frau
+    [address] => Pilzgasse 23/6
+    [postal_code] => 1210
+    [city] => Wien
+    [email] => wi23b034@technikum-wien.at
+    [payment_info] => IBAN
+)
+
+✅ Update erfolgreich ausgeführt.
