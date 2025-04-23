@@ -2,14 +2,20 @@
 class DbAccess {
     public static function connect() {
         $host = 'localhost';
-        $dbname = 'webshop';
+        $dbname = 'blattwerk_shop';
         $user = 'root';
         $pass = '';
 
         try {
             return new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
         } catch (PDOException $e) {
-            die("Verbindung fehlgeschlagen: " . $e->getMessage());
+            header('Content-Type: application/json');
+http_response_code(500);
+echo json_encode([
+    'success' => false,
+    'message' => 'Datenbankverbindung fehlgeschlagen: ' . $e->getMessage()
+]);
+exit;
         }
     }
 }

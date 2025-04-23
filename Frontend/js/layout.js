@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     if (user.role !== "guest") {
                         nav.innerHTML += `<li class="nav-item"><a class="nav-link" href="${backendPath}logic/logout.php">Logout</a></li>`;
+                        nav.innerHTML += `<li class="nav-item"><a class="nav-link" href="${frontendPath}sites/account.html">Mein Account</a></li>`;
                     } else {
                         nav.innerHTML += `<li class="nav-item"><a class="nav-link" href="${frontendPath}sites/login.html">Login</a></li>`;
                         nav.innerHTML += `<li class="nav-item"><a class="nav-link" href="${frontendPath}sites/register.html">Register</a></li>`;
