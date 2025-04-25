@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Erstellungszeit: 18. Apr 2025 um 18:04
--- Server-Version: 10.4.28-MariaDB
--- PHP-Version: 8.2.4
+-- Host: 127.0.0.1
+-- Generation Time: Apr 25, 2025 at 05:14 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Datenbank: `blattwerk_shop`
+-- Database: `blattwerk_shop`
 --
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `cart_items`
+-- Table structure for table `cart_items`
 --
 
 CREATE TABLE `cart_items` (
@@ -35,7 +35,7 @@ CREATE TABLE `cart_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Daten für Tabelle `cart_items`
+-- Dumping data for table `cart_items`
 --
 
 INSERT INTO `cart_items` (`id`, `user_id`, `product_id`, `quantity`) VALUES
@@ -46,7 +46,7 @@ INSERT INTO `cart_items` (`id`, `user_id`, `product_id`, `quantity`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `categories`
+-- Table structure for table `categories`
 --
 
 CREATE TABLE `categories` (
@@ -55,7 +55,7 @@ CREATE TABLE `categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Daten für Tabelle `categories`
+-- Dumping data for table `categories`
 --
 
 INSERT INTO `categories` (`id`, `name`) VALUES
@@ -66,7 +66,7 @@ INSERT INTO `categories` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `orders`
+-- Table structure for table `orders`
 --
 
 CREATE TABLE `orders` (
@@ -76,7 +76,7 @@ CREATE TABLE `orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Daten für Tabelle `orders`
+-- Dumping data for table `orders`
 --
 
 INSERT INTO `orders` (`id`, `user_id`, `created_at`) VALUES
@@ -86,7 +86,7 @@ INSERT INTO `orders` (`id`, `user_id`, `created_at`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `order_items`
+-- Table structure for table `order_items`
 --
 
 CREATE TABLE `order_items` (
@@ -96,7 +96,7 @@ CREATE TABLE `order_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Daten für Tabelle `order_items`
+-- Dumping data for table `order_items`
 --
 
 INSERT INTO `order_items` (`order_id`, `product_id`, `quantity`) VALUES
@@ -111,7 +111,7 @@ INSERT INTO `order_items` (`order_id`, `product_id`, `quantity`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `products`
+-- Table structure for table `products`
 --
 
 CREATE TABLE `products` (
@@ -125,19 +125,19 @@ CREATE TABLE `products` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Daten für Tabelle `products`
+-- Dumping data for table `products`
 --
 
 INSERT INTO `products` (`id`, `name`, `description`, `price`, `rating`, `image`, `category_id`) VALUES
 (1, 'Monstera Deliciosa', 'Tropische Zimmerpflanze mit großen Blättern.', 29.99, 4.5, 'productpictures/monstera.jpg', 1),
 (2, 'Basilikum', 'Frisches Basilikum im Topf.', 3.49, 4.0, 'productpictures/basilikum.jpg', 2),
 (3, 'Aloe Vera', 'Pflegeleichte Sukkulente mit heilender Wirkung.', 12.90, 4.8, 'productpictures/aloe.jpg', 1),
-(4, 'Kaktus', 'Kleiner Deko-Kaktus mit Blüte.', 5.95, 3.9, 'productpictures/kaktus.jpg', 3);
+(4, 'Kaktus', 'Kleiner Deko-Kaktus mit Blüte.', 9.51, 3.9, 'productpictures/kaktus.jpg', 3);
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -157,20 +157,21 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Daten für Tabelle `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `salutation`, `first_name`, `last_name`, `address`, `postal_code`, `city`, `email`, `username`, `password`, `payment_info`, `role`, `active`) VALUES
 (1, 'Herr', 'Christoph', 'Bout', 'Krafft-Ebinggase 4', '1140', 'Wien', 'boutchristoph@gmail.com', 'wi23b005', '$2y$10$a5mEspqKZQeJaw2dfe/oreI.zZM0lnOSzA/N6zoNd34kdyweyP7qG', '', 'user', 1),
 (3, 'Herr', 'Christoph', 'Bout', 'Krafft-Ebinggase 4', '1140', 'Wien', 'wi23b005@technikum-wien.at', 'wi23b005_01', '$2y$10$G4uRa8k/OE2F8APgiXH.g.0A2Bsbki1KW66MC9wecvLyvLBksNJ3S', '', 'user', 1),
-(4, '1', 'Admin', 'System', 'Adminstraße 1', '1000', 'Adminhausen', 'admin@example.com', 'admin', '$2y$10$etnJSJpWn/QK8gFKAim.xOqBclAPVFL/UNYR2pdFJHbo02853Sspu', 'NULL', 'admin', 1);
+(5, 'Herr', 'Admin', 'Admin', 'Aidmin', '0000', 'Admin', 'admin@admin.com', 'admin', '$2y$10$YWsan0hoEPPOABlfjfUqzeIXqJVt0XdpLbLBbcQoUuKcoBJHpaz5W', '', 'admin', 1),
+(6, 'Herr', 'User', 'User', 'User', '0000', 'User', 'user@user.com', 'user', '$2y$10$3qkPY0YOjuhWc/dVmmo16OwKgXs1QDjkdVyqBP929DQLHJRMQuWym', '', 'user', 1);
 
 --
--- Indizes der exportierten Tabellen
+-- Indexes for dumped tables
 --
 
 --
--- Indizes für die Tabelle `cart_items`
+-- Indexes for table `cart_items`
 --
 ALTER TABLE `cart_items`
   ADD PRIMARY KEY (`id`),
@@ -178,35 +179,35 @@ ALTER TABLE `cart_items`
   ADD KEY `product_id` (`product_id`);
 
 --
--- Indizes für die Tabelle `categories`
+-- Indexes for table `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `name` (`name`);
 
 --
--- Indizes für die Tabelle `orders`
+-- Indexes for table `orders`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_user_id` (`user_id`) USING BTREE;
 
 --
--- Indizes für die Tabelle `order_items`
+-- Indexes for table `order_items`
 --
 ALTER TABLE `order_items`
   ADD KEY `fk_order_id` (`order_id`),
   ADD KEY `fk_product_id` (`product_id`);
 
 --
--- Indizes für die Tabelle `products`
+-- Indexes for table `products`
 --
 ALTER TABLE `products`
   ADD PRIMARY KEY (`id`),
   ADD KEY `category_id` (`category_id`);
 
 --
--- Indizes für die Tabelle `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
@@ -214,52 +215,52 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `username` (`username`);
 
 --
--- AUTO_INCREMENT für exportierte Tabellen
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT für Tabelle `cart_items`
+-- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=199;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=200;
 
 --
--- AUTO_INCREMENT für Tabelle `categories`
+-- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT für Tabelle `orders`
+-- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT für Tabelle `products`
+-- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT für Tabelle `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- Constraints der exportierten Tabellen
+-- Constraints for dumped tables
 --
 
 --
--- Constraints der Tabelle `cart_items`
+-- Constraints for table `cart_items`
 --
 ALTER TABLE `cart_items`
   ADD CONSTRAINT `cart_items_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `cart_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
 
 --
--- Constraints der Tabelle `products`
+-- Constraints for table `products`
 --
 ALTER TABLE `products`
   ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`);
