@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS blattwerk_shop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE blattwerk_shop;
+
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
