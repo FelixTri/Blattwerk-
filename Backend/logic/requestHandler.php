@@ -56,22 +56,48 @@ switch ($action) {
         }
         break;
 
-    case 'getSessionInfo':
-        if (!isset($_SESSION['user_id']) && isset($_COOKIE['user_id'], $_COOKIE['user_hash'])) {
-            $pdo  = DbAccess::connect();
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-            $stmt->execute([$_COOKIE['user_id']]);
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($user && hash('sha256', $user['password']) === $_COOKIE['user_hash']) {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['role']    = $user['role'];
+        case 'getSessionInfo':
+            // Auto-Login per Cookie, falls Session noch fehlt
+            if (!isset($_SESSION['user_id']) 
+                && isset($_COOKIE['user_id'], $_COOKIE['user_hash'])
+            ) {
+                $pdo  = DbAccess::connect();
+                $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+                $stmt->execute([$_COOKIE['user_id']]);
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($user 
+                    && hash('sha256', $user['password']) === $_COOKIE['user_hash']
+                ) {
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['role']    = $user['role'];
+                }
             }
-        }
-        echo json_encode([
-            'user_id' => $_SESSION['user_id'] ?? null,
-            'role'    => $_SESSION['role']    ?? 'guest'
-        ]);
-        break;
+    
+            if (isset($_SESSION['user_id'])) {
+                // Vollständige User-Daten ziehen, inkl. payment_info
+                $pdo  = DbAccess::connect();
+                $stmt = $pdo->prepare("
+                    SELECT id, username, role, payment_info 
+                      FROM users 
+                     WHERE id = ?
+                ");
+                $stmt->execute([ $_SESSION['user_id'] ]);
+                $u = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+                echo json_encode([
+                    'user_id'      => $u['id']            ?? null,
+                    'username'     => $u['username']      ?? null,
+                    'role'         => $u['role']          ?? 'guest',
+                    'payment_info' => $u['payment_info']  ?? ''
+                ]);
+            } else {
+                echo json_encode([
+                    'user_id'      => null,
+                    'username'     => null,
+                    'role'         => 'guest',
+                    'payment_info' => ''
+                ]);
+            }
+            break;
 
     case 'getCategories':
         $pdo  = DbAccess::connect();
