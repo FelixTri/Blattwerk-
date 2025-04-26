@@ -63,7 +63,7 @@
         <label for="payment_info" class="form-label">Zahlungsinformationen</label>
         <input type="text" id="payment_info" name="payment_info" class="form-control" placeholder="z.B. IBAN, Kreditkarte, PayPal-Mail">
       </div>
-      <button type="submit" class="btn btn-primary">Speichern</button>
+      <button type="submit" class="btn btn-success">Speichern</button>
 
     </form>
 
@@ -76,20 +76,35 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const user = JSON.parse(localStorage.getItem('user'));
-      if (user) {
-        ["salutation", "address", "postal_code", "city", "email", "username", "payment_info"].forEach(field => {
-          if (user[field]) {
-            document.getElementById(field).value = user[field];
+      // 1) Session-Daten vom Server holen (inkl. payment_info)
+      fetch("../../Backend/logic/requestHandler.php?action=getSessionInfo", {
+        credentials: "include"
+      })
+        .then(res => {
+          if (!res.ok) throw new Error("Keine Session-Daten");
+          return res.json();
+        })
+        .then(user => {
+          if (!user.user_id) {
+            alert("Bitte melde dich zuerst an.");
+            window.location.href = "login.html";
+            return;
           }
+          // Formularfelder befüllen
+          ['salutation','address','postal_code','city','email','username','payment_info'].forEach(field => {
+            const el = document.getElementById(field);
+            if (el && user[field] !== undefined) {
+              el.value = user[field];
+            }
+          });
+          document.getElementById('username').readOnly = true;
+        })
+        .catch(err => {
+          console.error("Fehler beim Laden deiner Daten:", err);
+          alert("Fehler beim Laden deiner Daten.");
         });
-        document.getElementById("username").readOnly = true; // Username nicht änderbar
-      } else {
-        alert("Bitte melde dich zuerst an.");
-        window.location.href = "../sites/login.html";
-      }
     });
-  </script>
+    </script>
 
 </body>
 </html>

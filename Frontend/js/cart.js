@@ -163,7 +163,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-// === NEU: lädt Methoden und aktiviert Gutschein-Logik ===
 function loadPaymentOptions() {
     const pmContainer = document.getElementById("payment-methods");
     const couponRadio  = document.getElementById("pay-coupon-radio");
@@ -179,7 +178,7 @@ function loadPaymentOptions() {
         document.querySelectorAll(".pay-radio").forEach(r => r.checked = false);
     });
 
-    // 2) Fetch an neues Endpoint!
+    // 2) Fetch an neues Endpoint
     fetch('../../Backend/logic/getPaymentMethods.php', { credentials: 'include' })
       .then(r => r.json())
       .then(json => {
@@ -207,7 +206,7 @@ function loadPaymentOptions() {
                 ${i===0?'checked':''}
               >
               <label class="form-check-label" for="pay-${i}">
-                ${m.type} – **** ${m.last4}
+                ${m.type} **** **** **** ${m.last4}
               </label>
             </div>
           `;

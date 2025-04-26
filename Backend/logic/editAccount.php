@@ -1,63 +1,76 @@
 <?php
-// Fehlerausgabe aktivieren
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// Header setzen für JSON
+// Fehlerausgabe deaktivieren, nur JSON zurückliefern
+ini_set('display_errors', 0);
+error_reporting(0);
 header('Content-Type: application/json');
-require_once '../config/dbaccess.php';
+session_start();
 
-// Pfad zur Debug-Datei (eine Ebene über dem Backend-Ordner)
-$logFile = __DIR__ . "/../../debug_log.txt";
-file_put_contents($logFile, "Script gestartet: " . date("H:i:s") . PHP_EOL, FILE_APPEND);
+require_once __DIR__ . '/../config/dbaccess.php';
 
-// JSON-Daten empfangen
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(403);
+    echo json_encode(['success'=>false,'message'=>'Nicht eingeloggt']);
+    exit;
+}
+
 $data = json_decode(file_get_contents('php://input'), true);
-file_put_contents($logFile, "Empfangene Daten: " . print_r($data, true) . PHP_EOL, FILE_APPEND);
-
-// Überprüfen ob Daten vorhanden & gültig
-if (!$data || !isset($data['username'])) {
-    file_put_contents($logFile, "❌ Ungültige oder leere Daten empfangen." . PHP_EOL, FILE_APPEND);
-    echo json_encode(['success' => false, 'message' => 'Ungültige Daten.']);
+if (!$data || !is_array($data)) {
+    http_response_code(400);
+    echo json_encode(['success'=>false,'message'=>'Ungültige Daten']);
     exit;
 }
 
 try {
-    // Verbindung zur DB herstellen
     $pdo = DbAccess::connect();
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // SQL-Update-Statement
-    $sql = "UPDATE users SET 
-                salutation = :salutation, 
-                address = :address, 
-                postal_code = :postal_code, 
-                city = :city, 
-                email = :email, 
-                payment_info = :payment_info
-            WHERE username = :username";
-
-    $stmt = $pdo->prepare($sql);
-
-    // Statement ausführen
+    // Account updaten, inkl. payment_info
+    $stmt = $pdo->prepare("
+        UPDATE users
+           SET salutation    = :salutation,
+               address       = :address,
+               postal_code   = :postal_code,
+               city          = :city,
+               email         = :email,
+               payment_info  = :payment_info
+         WHERE id = :id
+    ");
     $stmt->execute([
-        ':salutation'    => $data['salutation'] ?? '',
-        ':address'       => $data['address'] ?? '',
-        ':postal_code'   => $data['postal_code'] ?? '',
-        ':city'          => $data['city'] ?? '',
-        ':email'         => $data['email'] ?? '',
-        ':payment_info'  => $data['payment_info'] ?? '',
-        ':username'      => $data['username']
+        ':salutation'   => $data['salutation']   ?? '',
+        ':address'      => $data['address']      ?? '',
+        ':postal_code'  => $data['postal_code']  ?? '',
+        ':city'         => $data['city']         ?? '',
+        ':email'        => $data['email']        ?? '',
+        ':payment_info' => $data['payment_info'] ?? '',
+        ':id'           => $_SESSION['user_id']
     ]);
 
-    // Erfolg loggen
-    file_put_contents($logFile, "✅ Update erfolgreich ausgeführt." . PHP_EOL, FILE_APPEND);
-    echo json_encode(['success' => true]);
-} catch (PDOException $e) {
-    file_put_contents($logFile, "❌ SQL: " . $sql . PHP_EOL, FILE_APPEND);
-    file_put_contents($logFile, "❌ Daten: " . print_r($data, true) . PHP_EOL, FILE_APPEND);
-    file_put_contents($logFile, "❌ DB-Fehler: " . $e->getMessage() . PHP_EOL, FILE_APPEND);
+    // Frisch gespeicherte Daten zurückliefern
+    $stmt2 = $pdo->prepare("
+        SELECT 
+            id,
+            username,
+            salutation,
+            address,
+            postal_code,
+            city,
+            email,
+            payment_info,
+            role,
+            active
+          FROM users
+         WHERE id = ?
+    ");
+    $stmt2->execute([ $_SESSION['user_id'] ]);
+    $user = $stmt2->fetch(PDO::FETCH_ASSOC) ?: [];
+
+    echo json_encode([
+        'success' => true,
+        'user'    => $user
+    ]);
+} catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'DB-Fehler: ' . $e->getMessage()]);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Datenbank-Fehler: ' . $e->getMessage()
+    ]);
 }
