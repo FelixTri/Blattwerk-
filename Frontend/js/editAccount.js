@@ -1,4 +1,3 @@
-// editAccount.js
 document.addEventListener("DOMContentLoaded", () => {
     const editAccountForm = document.getElementById("editAccountForm");
   

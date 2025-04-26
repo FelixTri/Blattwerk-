@@ -67,7 +67,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
         };
 
-        // Initial
         fetchProducts();
 
         // Live-Search
