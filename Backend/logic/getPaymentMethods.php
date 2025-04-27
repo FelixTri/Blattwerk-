@@ -11,7 +11,6 @@ if (!empty($_SESSION['user_id'])) {
         $stmt->execute([ (int)$_SESSION['user_id'] ]);
         $raw = $stmt->fetchColumn();
 
-        // Versuch: payment_info als JSON-Array parsen
         $methods = json_decode($raw, true);
 
         // Fallback: wenn es kein Array ist, aber ein Nicht-Leer-String

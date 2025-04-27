@@ -6,7 +6,7 @@ USE blattwerk_shop;
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Erstellungszeit: 26. Apr 2025 um 16:34
+-- Erstellungszeit: 27. Apr 2025 um 21:18
 -- Server-Version: 10.4.28-MariaDB
 -- PHP-Version: 8.2.4
 
@@ -44,7 +44,7 @@ CREATE TABLE `cart_items` (
 INSERT INTO `cart_items` (`id`, `user_id`, `product_id`, `quantity`) VALUES
 (201, 5, 2, 1),
 (202, 5, 3, 1),
-(212, 1, 2, 3);
+(218, 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -87,7 +87,10 @@ INSERT INTO `invoices` (`id`, `order_id`, `invoice_number`, `created_at`) VALUES
 (1, 1, 'RW2025-000001', '2025-04-26 16:17:45'),
 (2, 2, 'RW2025-000002', '2025-04-26 16:18:14'),
 (3, 6, 'RW2025-000003', '2025-04-26 16:19:11'),
-(4, 7, 'RW2025-000004', '2025-04-26 16:27:04');
+(4, 7, 'RW2025-000004', '2025-04-26 16:27:04'),
+(5, 10, 'RW2025-000005', '2025-04-26 20:58:16'),
+(6, 12, 'RW2025-000006', '2025-04-26 21:09:37'),
+(7, 13, 'RW2025-000007', '2025-04-27 21:06:47');
 
 -- --------------------------------------------------------
 
@@ -98,6 +101,7 @@ INSERT INTO `invoices` (`id`, `order_id`, `invoice_number`, `created_at`) VALUES
 CREATE TABLE `orders` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
+  `payment_used` varchar(50) DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -105,14 +109,20 @@ CREATE TABLE `orders` (
 -- Daten für Tabelle `orders`
 --
 
-INSERT INTO `orders` (`id`, `user_id`, `created_at`) VALUES
-(1, 1, '2025-04-18 17:37:26'),
-(2, 1, '2025-04-18 18:00:10'),
-(3, 5, '2025-04-25 17:42:04'),
-(4, 1, '2025-04-26 15:46:29'),
-(5, 1, '2025-04-26 15:56:32'),
-(6, 1, '2025-04-26 16:04:24'),
-(7, 1, '2025-04-26 16:27:00');
+INSERT INTO `orders` (`id`, `user_id`, `payment_used`, `created_at`) VALUES
+(1, 1, NULL, '2025-04-18 17:37:26'),
+(2, 1, NULL, '2025-04-18 18:00:10'),
+(3, 5, NULL, '2025-04-25 17:42:04'),
+(4, 1, NULL, '2025-04-26 15:46:29'),
+(5, 1, NULL, '2025-04-26 15:56:32'),
+(6, 1, NULL, '2025-04-26 16:04:24'),
+(7, 1, NULL, '2025-04-26 16:27:00'),
+(8, 1, NULL, '2025-04-26 17:15:33'),
+(9, 1, NULL, '2025-04-26 17:20:10'),
+(10, 1, 'stored', '2025-04-26 20:58:09'),
+(11, 1, 'stored', '2025-04-26 21:03:54'),
+(12, 1, 'stored', '2025-04-26 21:09:35'),
+(13, 1, 'stored', '2025-04-27 21:06:43');
 
 -- --------------------------------------------------------
 
@@ -145,7 +155,10 @@ INSERT INTO `order_items` (`order_id`, `product_id`, `quantity`) VALUES
 (5, 2, 1),
 (5, 3, 1),
 (6, 2, 1),
-(7, 2, 3);
+(7, 2, 3),
+(8, 2, 1),
+(10, 2, 1),
+(13, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -200,7 +213,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `salutation`, `first_name`, `last_name`, `address`, `postal_code`, `city`, `email`, `username`, `password`, `payment_info`, `role`, `active`) VALUES
-(1, 'Herr', 'Christoph', 'Bout', 'Krafft-Ebinggase 4', '1140', 'Wien', 'boutchristoph@gmail.com', 'wi23b005', '$2y$10$a5mEspqKZQeJaw2dfe/oreI.zZM0lnOSzA/N6zoNd34kdyweyP7qG', '', 'user', 1),
+(1, 'Herr', 'Christoph', 'Bout', 'Krafft-Ebinggasse 4', '1140', 'Wien', 'boutchristoph@gmail.com', 'wi23b005', '$2y$10$a5mEspqKZQeJaw2dfe/oreI.zZM0lnOSzA/N6zoNd34kdyweyP7qG', 'AT22 0000 0000 0000', 'user', 1),
 (3, 'Herr', 'Christoph', 'Bout', 'Krafft-Ebinggase 4', '1140', 'Wien', 'wi23b005@technikum-wien.at', 'wi23b005_01', '$2y$10$G4uRa8k/OE2F8APgiXH.g.0A2Bsbki1KW66MC9wecvLyvLBksNJ3S', '', 'user', 1),
 (5, 'Herr', 'Admin', 'Admin', 'Aidmin', '0000', 'Admin', 'admin@admin.com', 'admin', '$2y$10$YWsan0hoEPPOABlfjfUqzeIXqJVt0XdpLbLBbcQoUuKcoBJHpaz5W', '', 'admin', 1),
 (6, 'Herr', 'User', 'User', 'User', '0000', 'User', 'user@user.com', 'user', '$2y$10$3qkPY0YOjuhWc/dVmmo16OwKgXs1QDjkdVyqBP929DQLHJRMQuWym', '', 'user', 1);
@@ -269,7 +282,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT für Tabelle `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=213;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=219;
 
 --
 -- AUTO_INCREMENT für Tabelle `categories`
@@ -281,13 +294,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT für Tabelle `invoices`
 --
 ALTER TABLE `invoices`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT für Tabelle `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT für Tabelle `products`
