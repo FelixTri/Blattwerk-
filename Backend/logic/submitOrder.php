@@ -26,14 +26,11 @@ $stmtPay = $pdo->prepare("SELECT payment_info FROM users WHERE id = ?");
 $stmtPay->execute([$_SESSION['user_id']]);
 $raw = $stmtPay->fetchColumn();
 
-// 2) Versuch JSON‐Decode
+// 2) Zahlungsmethoden dekodieren
 $methods = json_decode($raw, true);
-
-// 3) Fallback: falls kein Array, aber ein Nicht-Leer-String
 if (!is_array($methods)) {
     $pi = trim((string)$raw);
     if ($pi !== '') {
-        // letzte 4 Ziffern extrahieren
         $digits = preg_replace('/\D/', '', $pi);
         $last4  = substr($digits, -4) ?: substr($pi, -4);
         $methods = [[
@@ -47,7 +44,7 @@ if (!is_array($methods)) {
     }
 }
 
-// 4) Keine Methoden?
+// 3) Keine Zahlungsmethoden vorhanden
 if (empty($methods)) {
     http_response_code(400);
     echo json_encode([
@@ -58,14 +55,13 @@ if (empty($methods)) {
     exit;
 }
 
-// 5) payment_method vs. gift_code auswerten
+// 4) payment_method vs. gift_code auswerten
 $giftCode      = trim($input['gift_code'] ?? '');
 $paymentMethod = trim($input['payment_method'] ?? '');
 
 if ($giftCode !== '') {
     $usedPayment = 'GUTSCHEIN:'.strtoupper(preg_replace('/[^A-Za-z0-9]/','',$giftCode));
 } elseif ($paymentMethod !== '') {
-    // Prüfen, ob ID existiert
     $validIds = array_column($methods, 'id');
     if (!in_array($paymentMethod, $validIds, true)) {
         http_response_code(400);
@@ -83,10 +79,64 @@ if ($giftCode !== '') {
     exit;
 }
 
-// 6) Bestellung speichern (Spalte payment_used in orders vorausgesetzt)
+// 5) Bestellsumme berechnen
+$totalAmount = 0;
+foreach ($input['items'] as $it) {
+    $qty = (int)($it['quantity'] ?? 0);
+    $price = (float)($it['price'] ?? 0);
+    if ($qty > 0 && $price > 0) {
+        $totalAmount += $qty * $price;
+    }
+}
+
 try {
     $pdo->beginTransaction();
-    // Falls deine orders-Tabelle payment_used enthält, nimm den Kommentar raus:
+
+    // 6) Gutschein prüfen und aktualisieren (nur innerhalb der Transaktion!)
+    if ($giftCode !== '') {
+        $stmtGift = $pdo->prepare("SELECT amount FROM vouchers WHERE code = ? AND is_active = 1 FOR UPDATE");
+        $stmtGift->execute([$giftCode]);
+        $voucher = $stmtGift->fetch(PDO::FETCH_ASSOC);
+
+        if (!$voucher) {
+            $pdo->rollBack();
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Ungültiger oder abgelaufener Gutschein.']);
+            exit;
+        }
+
+        $voucherAmount = (float) $voucher['amount'];
+
+        if ($voucherAmount < $totalAmount) {
+            $pdo->rollBack();
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Gutscheinbetrag reicht nicht aus.']);
+            exit;
+        }
+
+        $restbetrag = $voucherAmount - $totalAmount;
+
+$stmtUpd = $pdo->prepare("UPDATE vouchers SET amount = ?, is_active = ? WHERE code = ?");
+$success = $stmtUpd->execute([
+    $restbetrag,
+    ($restbetrag > 0 ? 1 : 0),
+    $giftCode
+]);
+
+if (!$success) {
+    $pdo->rollBack();
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Fehler beim Aktualisieren des Gutscheins.'
+    ]);
+    exit;
+}
+    $totalAmount = 0;
+
+    }
+
+    // 7) Bestellung speichern
     $stmtO = $pdo->prepare("
         INSERT INTO orders (user_id, payment_used, created_at)
         VALUES (?, ?, NOW())
@@ -94,6 +144,7 @@ try {
     $stmtO->execute([$_SESSION['user_id'], $usedPayment]);
     $orderId = $pdo->lastInsertId();
 
+    // 8) Bestellte Produkte speichern
     $stmtI = $pdo->prepare("
         INSERT INTO order_items (order_id, product_id, quantity)
         VALUES (?, ?, ?)
@@ -105,6 +156,7 @@ try {
             $stmtI->execute([$orderId, $pid, $qty]);
         }
     }
+
     $pdo->commit();
 
     echo json_encode(['success'=>true,'orderId'=>$orderId]);
@@ -116,3 +168,4 @@ try {
         'message'=>'Fehler beim Speichern: '.$e->getMessage()
     ]);
 }
+?>

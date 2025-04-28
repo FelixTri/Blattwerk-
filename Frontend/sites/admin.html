@@ -102,9 +102,39 @@
           </div>
         </div>
 
+        <section>
+          <h2>Gutscheine erstellen</h2>
+          <form id="voucherForm">
+              <label for="amount">Gutscheinbetrag (€):</label>
+              <input type="number" id="amount" name="amount" min="1" required>
+              <button type="submit">Gutschein erstellen</button>
+          </form>
+          <div id="voucherResult"></div>
+      </section>
+
+      <section>
+        <h2>Gutscheine Übersicht</h2>
+        <table id="voucher-table" class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Code</th>
+              <th>Betrag (€)</th>
+              <th>Status</th>
+              <th>Erstellt am</th>
+              <th>Aktionen</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Gutscheine werden hier eingefügt -->
+          </tbody>
+        </table>
+      </section>
+
     </main>
     <div id="footer-placeholder"></div>
     <script src="../js/admin_products.js"></script>
     <script src="../js/admin_customers.js"></script>
+    <script src="../js/admin_vouchers.js"></script>
 </body>
 </html>
