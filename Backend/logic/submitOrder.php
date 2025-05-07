@@ -18,7 +18,7 @@ if (!isset($input['items']) || !is_array($input['items'])) {
 }
 
 // DB-Verbindung
-require_once __DIR__ . '/../config/dbaccess.php';
+require_once __DIR__ . '/../helpers/dbaccess.php';
 $pdo = DbAccess::connect();
 
 // 1) Original payment_info auslesen

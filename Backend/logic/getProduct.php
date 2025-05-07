@@ -1,28 +1,32 @@
 <?php
+require_once __DIR__ . '/../helpers/dbaccess.php';
+
 header('Content-Type: application/json');
 
-$host = 'localhost';
-$db = 'blattwerk_shop';
-$user = 'root';
-$pass = '';
+$id = (int) ($_GET['id'] ?? 0);
+if ($id <= 0) {
+    echo json_encode(['error' => 'Ungültige Produkt-ID']);
+    exit;
+}
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = DbAccess::connect();
 
-    $id = $_GET['id'] ?? null;
-    if (!$id) throw new Exception("Kein Produkt-ID angegeben");
-
-    $stmt = $pdo->prepare("SELECT id, name, description, price FROM products WHERE id = ?");
+    $sql = "
+        SELECT
+            p.*, 
+            c.name AS category_name
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id
+        WHERE p.id = ?
+    ";
+    $stmt = $pdo->prepare($sql);
     $stmt->execute([$id]);
+
     $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($product) {
-        echo json_encode($product);
-    } else {
-        echo json_encode(['error' => 'Produkt nicht gefunden']);
-    }
+    echo json_encode($product ?: ['error' => 'Produkt nicht gefunden']);
+
 } catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(['error' => 'Fehler beim Abrufen des Produkts', 'details' => $e->getMessage()]);
+    echo json_encode(['error' => 'Serverfehler: ' . $e->getMessage()]);
 }

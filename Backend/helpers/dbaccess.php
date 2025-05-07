@@ -10,12 +10,12 @@ class DbAccess {
             return new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
         } catch (PDOException $e) {
             header('Content-Type: application/json');
-http_response_code(500);
-echo json_encode([
-    'success' => false,
-    'message' => 'Datenbankverbindung fehlgeschlagen: ' . $e->getMessage()
-]);
-exit;
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Datenbankverbindung fehlgeschlagen: ' . $e->getMessage()
+            ]);
+            exit;
         }
     }
 }

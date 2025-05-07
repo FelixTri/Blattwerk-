@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const registrationForm = document.getElementById('registrationForm');
     const passwordError = document.getElementById('passwordError');
   
+    if (!registrationForm || !passwordError) return; // Seite hat kein Formular
+
     registrationForm.addEventListener('submit', (event) => {
       event.preventDefault();
       passwordError.textContent = '';

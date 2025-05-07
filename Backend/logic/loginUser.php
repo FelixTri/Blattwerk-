@@ -2,22 +2,7 @@
 session_start();
 header('Content-Type: application/json');
 
-// DB-Verbindung
-$dbHost = 'localhost';
-$dbName = 'blattwerk_shop';
-$dbUser = 'root';
-$dbPass = '';
-
-try {
-    $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName;charset=utf8", $dbUser, $dbPass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Datenbankverbindung fehlgeschlagen: ' . $e->getMessage()
-    ]);
-    exit;
-}
+require_once __DIR__ . '/../helpers/dbaccess.php'; // eingebunden!
 
 // Request‐Body parsen
 $data = json_decode(file_get_contents('php://input'), true);
@@ -34,7 +19,9 @@ $password = $data['password'] ?? '';
 $remember = $data['remember'] ?? false;
 
 try {
-    // User laden (inkl. payment_info!)
+    $pdo = DbAccess::connect();
+
+    // User laden
     $stmt = $pdo->prepare("
         SELECT 
             id, username, first_name, last_name, email, password, role, active, payment_info
@@ -52,6 +39,7 @@ try {
         ]);
         exit;
     }
+
     if ((int)$user['active'] === 0) {
         echo json_encode([
             'success' => false,
@@ -60,22 +48,23 @@ try {
         exit;
     }
 
-    // Session & optional Remember-Cookies
+    // Session & Cookies setzen
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['role']    = $user['role'];
+
     if ($remember) {
         setcookie("user_id",   $user['id'],               time() + 86400*30, "/");
         setcookie("user_hash", hash('sha256', $user['password']), time() + 86400*30, "/");
     }
 
-    // Passwort aus Antwort entfernen
+    // Passwort entfernen
     unset($user['password']);
 
-    // Antwort mit payment_info
     echo json_encode([
         'success' => true,
         'user'    => $user
     ]);
+
 } catch (PDOException $e) {
     echo json_encode([
         'success' => false,

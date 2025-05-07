@@ -3,7 +3,7 @@ class Product {
     private $pdo;
 
     public function __construct() {
-        require_once __DIR__ . '/../config/dbaccess.php';
+        require_once __DIR__ . '/../helpers/dbaccess.php';
         $this->pdo = DbAccess::connect();
     }
 

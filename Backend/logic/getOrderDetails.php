@@ -1,72 +1,57 @@
 <?php
 session_start();
+
+require_once __DIR__ . '/../helpers/dbaccess.php';
+
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {
-    http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'Nicht eingeloggt']);
     exit;
 }
-if (!isset($_GET['orderId'])) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'orderId fehlt']);
+
+$orderId = (int)($_GET['orderId'] ?? 0);
+if ($orderId <= 0) {
+    echo json_encode(['success' => false, 'message' => 'Ungültige Bestell-ID']);
     exit;
 }
 
-$orderId = (int) $_GET['orderId'];
-$userId  = (int) $_SESSION['user_id'];
-
-$host   = 'localhost';
-$dbName = 'blattwerk_shop';
-$dbUser = 'root';
-$dbPass = '';
-
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbName;charset=utf8", $dbUser, $dbPass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = DbAccess::connect();
 
-    // Bestellung laden
-    $sqlOrder = "
-        SELECT
-            o.id,
-            o.created_at,
-            COALESCE(i.invoice_number, '') AS invoice_number
-        FROM orders o
-        LEFT JOIN invoices i ON i.order_id = o.id
-        WHERE o.id = ? AND o.user_id = ?
-    ";
-    $stmtOrder = $pdo->prepare($sqlOrder);
-    $stmtOrder->execute([$orderId, $userId]);
-    $order = $stmtOrder->fetch(PDO::FETCH_ASSOC);
+    // Sicherheitscheck: gehört Bestellung dem eingeloggten User?
+    $check = $pdo->prepare("SELECT * FROM orders WHERE id = ? AND user_id = ?");
+    $check->execute([$orderId, $_SESSION['user_id']]);
+    $order = $check->fetch(PDO::FETCH_ASSOC);
 
     if (!$order) {
-        http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Bestellung nicht gefunden']);
         exit;
     }
 
-    // Positionen laden
-    $sqlItems = "
+    // Bestelldetails holen
+    $stmt = $pdo->prepare("
         SELECT
-            p.id AS product_id,
-            p.name,
-            p.price,
-            oi.quantity
+            oi.product_id,
+            p.name AS name,
+            oi.quantity,
+            p.price
         FROM order_items oi
         JOIN products p ON p.id = oi.product_id
         WHERE oi.order_id = ?
-    ";
-    $stmtItems = $pdo->prepare($sqlItems);
-    $stmtItems->execute([$orderId]);
-    $order['items'] = $stmtItems->fetchAll(PDO::FETCH_ASSOC);
+    ");
+    $stmt->execute([$orderId]);
+    $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode(['success' => true, 'order' => $order]);
-} catch (Exception $e) {
-    http_response_code(500);
     echo json_encode([
-        'success' => false,
-        'message' => 'Datenbank-Fehler: ' . $e->getMessage()
+        'success' => true,
+        'order' => [
+            'id' => $orderId,
+            'created_at' => $order['created_at'],
+            'items' => $items
+        ]
     ]);
-    exit;
-}
 
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => 'Serverfehler: ' . $e->getMessage()]);
+}
