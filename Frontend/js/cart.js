@@ -169,7 +169,10 @@ function loadPaymentOptions() {
     const couponInput  = document.getElementById("coupon-code");
     const orderBtn     = document.getElementById("order-button");
 
-    // erstmal Gutschein‐Feld sperren
+    if (!pmContainer || !couponRadio || !couponInput || !orderBtn) {
+        return; // Seite hat keine Zahlungsoptionen
+    }
+
     couponInput.disabled = true;
 
     // 1) Gutschein‐Radio: bei Auswahl das Feld aktivieren

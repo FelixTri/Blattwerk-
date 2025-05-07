@@ -3,22 +3,25 @@ session_start();
 header('Content-Type: application/json');
 
 if (!empty($_SESSION['user_id'])) {
-    require_once __DIR__ . '/../config/dbaccess.php';
+    require_once __DIR__ . '/../helpers/dbaccess.php';
+
 
     try {
-        $pdo = DbAccess::connect();
-        $stmt = $pdo->prepare("SELECT payment_info FROM users WHERE id = ?");
-        $stmt->execute([ (int)$_SESSION['user_id'] ]);
-        $raw = $stmt->fetchColumn();
+            $pdo = DbAccess::connect();
+            
+            $stmt = $pdo->prepare("SELECT payment_info FROM users WHERE id = ?");
+            $stmt->execute([ (int)$_SESSION['user_id'] ]);
+            $raw = $stmt->fetchColumn();
 
-        $methods = json_decode($raw, true);
-
+            $methods = json_decode($raw, true);
         // Fallback: wenn es kein Array ist, aber ein Nicht-Leer-String
         if (!is_array($methods)) {
             $pi = trim((string)$raw);
             if ($pi !== '') {
                 // letzte 4 Ziffern extrahieren (Bsp. Kreditkarte/IBAN)
+                
                 $digits = preg_replace('/\D/', '', $pi);
+
                 $last4 = substr($digits, -4);
                 $methods = [[
                     'id'     => 'stored',

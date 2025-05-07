@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require_once __DIR__ . '/../config/dbaccess.php';
+require_once __DIR__ . '/../helpers/dbaccess.php';
 require_once __DIR__ . '/../models/Product.class.php';
 
 header('Content-Type: application/json');
@@ -57,63 +57,68 @@ switch ($action) {
         break;
 
         case 'getSessionInfo':
-            // Auto-Login per Cookie (falls gewünscht)
-            if (!isset($_SESSION['user_id']) &&
-                isset($_COOKIE['user_id'], $_COOKIE['user_hash'])
-            ) {
-                $pdo  = DbAccess::connect();
-                $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-                $stmt->execute([$_COOKIE['user_id']]);
-                $u0 = $stmt->fetch(PDO::FETCH_ASSOC);
-                if ($u0 && hash('sha256', $u0['password']) === $_COOKIE['user_hash']) {
-                    $_SESSION['user_id'] = $u0['id'];
-                    $_SESSION['role']    = $u0['role'];
+            try {
+                // Auto-Login per Cookie (falls gewünscht)
+                if (!isset($_SESSION['user_id']) &&
+                    isset($_COOKIE['user_id'], $_COOKIE['user_hash'])
+                ) {
+                    $pdo  = DbAccess::connect();
+                    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+                    $stmt->execute([$_COOKIE['user_id']]);
+                    $u0 = $stmt->fetch(PDO::FETCH_ASSOC);
+                    if ($u0 && hash('sha256', $u0['password']) === $_COOKIE['user_hash']) {
+                        $_SESSION['user_id'] = $u0['id'];
+                        $_SESSION['role']    = $u0['role'];
+                    }
                 }
+            
+                if (isset($_SESSION['user_id'])) {
+                    $pdo  = DbAccess::connect();
+                    $stmt = $pdo->prepare("
+                        SELECT
+                        id,
+                        username,
+                        role,
+                        payment_info,
+                        salutation,
+                        address,
+                        postal_code,
+                        city,
+                        email
+                        FROM users
+                        WHERE id = ?
+                    ");
+                    $stmt->execute([ $_SESSION['user_id'] ]);
+                    $u = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+            
+                    echo json_encode([
+                        'user_id'      => $u['id']             ?? null,
+                        'username'     => $u['username']       ?? '',
+                        'role'         => $u['role']           ?? 'guest',
+                        'payment_info' => $u['payment_info']   ?? '',
+                        'salutation'   => $u['salutation']     ?? '',
+                        'address'      => $u['address']        ?? '',
+                        'postal_code'  => $u['postal_code']    ?? '',
+                        'city'         => $u['city']           ?? '',
+                        'email'        => $u['email']          ?? ''
+                    ]);
+                } else {
+                    echo json_encode([
+                        'user_id'      => null,
+                        'username'     => '',
+                        'role'         => 'guest',
+                        'payment_info' => '',
+                        'salutation'   => '',
+                        'address'      => '',
+                        'postal_code'  => '',
+                        'city'         => '',
+                        'email'        => ''
+                    ]);
+                }
+            } catch (Exception $e) {
+                echo json_encode(['error' => 'Serverfehler: ' . $e->getMessage()]);
             }
-        
-            if (isset($_SESSION['user_id'])) {
-                $pdo  = DbAccess::connect();
-                $stmt = $pdo->prepare("
-                    SELECT
-                      id,
-                      username,
-                      role,
-                      payment_info,
-                      salutation,
-                      address,
-                      postal_code,
-                      city,
-                      email
-                    FROM users
-                    WHERE id = ?
-                ");
-                $stmt->execute([ $_SESSION['user_id'] ]);
-                $u = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
-        
-                echo json_encode([
-                    'user_id'      => $u['id']             ?? null,
-                    'username'     => $u['username']       ?? '',
-                    'role'         => $u['role']           ?? 'guest',
-                    'payment_info' => $u['payment_info']   ?? '',
-                    'salutation'   => $u['salutation']     ?? '',
-                    'address'      => $u['address']        ?? '',
-                    'postal_code'  => $u['postal_code']    ?? '',
-                    'city'         => $u['city']           ?? '',
-                    'email'        => $u['email']          ?? ''
-                ]);
-            } else {
-                echo json_encode([
-                    'user_id'      => null,
-                    'username'     => '',
-                    'role'         => 'guest',
-                    'payment_info' => '',
-                    'salutation'   => '',
-                    'address'      => '',
-                    'postal_code'  => '',
-                    'city'         => '',
-                    'email'        => ''
-                ]);
-            }
+
             break;
 
     case 'getCategories':

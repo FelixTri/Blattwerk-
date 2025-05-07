@@ -2,12 +2,15 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchOrders();
   
     async function fetchOrders() {
+      if (!document.getElementById('orders-list')) return;
       try {
         const res = await fetch('../../Backend/logic/getOrders.php', { credentials: 'include' });
         const data = await res.json();
         if (!data.success) throw new Error(data.message);
         renderOrders(data.orders);
       } catch (err) {
+        const list = document.getElementById('orders-list');
+        if (!list) return;
         document.getElementById('orders-list').innerHTML =
           `<div class="alert alert-danger">Fehler: ${err.message}</div>`;
       }

@@ -1,5 +1,5 @@
 <?php
-require_once("../config/dbaccess.php");
+require_once("../helpers/dbaccess.php");
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
