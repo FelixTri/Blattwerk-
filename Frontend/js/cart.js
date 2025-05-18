@@ -1,5 +1,14 @@
 // cart.js
 
+function updateOrderButtonState() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const orderButton = document.getElementById("order-button");
+    if (orderButton) {
+        orderButton.disabled = cart.length === 0;
+        orderButton.classList.toggle("disabled", cart.length === 0);
+    }
+}
+
 function addToCart(productId) {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const id = parseInt(productId, 10);
@@ -14,6 +23,7 @@ function addToCart(productId) {
     localStorage.setItem("cart", JSON.stringify(cart));
     updateCartCount();
     syncCartToBackend();
+    updateOrderButtonState();
 }
 
 function updateCartCount() {
@@ -28,7 +38,6 @@ function updateCartCount() {
 function loadCart() {
     let rawCart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    // Duplikate zusammenfassen
     const cart = [];
     rawCart.forEach(item => {
         const id = parseInt(item.id, 10);
@@ -43,6 +52,8 @@ function loadCart() {
 
     const cartItems = document.getElementById("cart-items");
     const cartTotal = document.getElementById("cart-total");
+
+    updateOrderButtonState();
 
     if (!cartItems || !cartTotal) return;
 
@@ -117,6 +128,7 @@ function updateQuantity(productId, change) {
     loadCart();
     updateCartCount();
     syncCartToBackend();
+    updateOrderButtonState();
 }
 
 function removeFromCart(productId) {
@@ -127,6 +139,7 @@ function removeFromCart(productId) {
     loadCart();
     updateCartCount();
     syncCartToBackend();
+    updateOrderButtonState();
 }
 
 function syncCartToBackend() {
@@ -148,20 +161,18 @@ function syncCartToBackend() {
 
 document.addEventListener("DOMContentLoaded", () => {
     updateCartCount();
+    updateOrderButtonState();
     if (window.location.pathname.includes("cart.html")) {
         loadCart();
     }
 
-    // 1) Payment‐Section initialisieren
     loadPaymentOptions();
 
-    // 2) Bestell‐Button hooken
     const orderBtn = document.getElementById("order-button");
     if (orderBtn) {
         orderBtn.addEventListener("click", () => submitOrder());
     }
 });
-
 
 function loadPaymentOptions() {
     const pmContainer = document.getElementById("payment-methods");
@@ -170,18 +181,16 @@ function loadPaymentOptions() {
     const orderBtn     = document.getElementById("order-button");
 
     if (!pmContainer || !couponRadio || !couponInput || !orderBtn) {
-        return; // Seite hat keine Zahlungsoptionen
+        return;
     }
 
     couponInput.disabled = true;
 
-    // 1) Gutschein‐Radio: bei Auswahl das Feld aktivieren
     couponRadio.addEventListener("change", () => {
         couponInput.disabled = false;
         document.querySelectorAll(".pay-radio").forEach(r => r.checked = false);
     });
 
-    // 2) Fetch an neues Endpoint
     fetch('../../Backend/logic/getPaymentMethods.php', { credentials: 'include' })
       .then(r => r.json())
       .then(json => {
@@ -195,7 +204,6 @@ function loadPaymentOptions() {
           return;
         }
 
-        // 3) Radio‐Buttons pro Methode rendern
         let html = '';
         json.methods.forEach((m, i) => {
           html += `
@@ -216,7 +224,6 @@ function loadPaymentOptions() {
         });
         pmContainer.innerHTML = html;
 
-        // 4) jede pay-radio sperrt das Gutscheinfeld
         document.querySelectorAll(".pay-radio").forEach(radio =>
           radio.addEventListener("change", () => couponInput.disabled = true)
         );
@@ -226,8 +233,6 @@ function loadPaymentOptions() {
       });
 }
 
-
-// === Bestell‐Submit unverändert, nur liest es now payOption aus ===
 function submitOrder() {
     const items = JSON.parse(localStorage.getItem("cart")) || [];
     const sel = document.querySelector('input[name="payOption"]:checked');
@@ -253,6 +258,7 @@ function submitOrder() {
             localStorage.removeItem("cart");
             loadCart();
             updateCartCount();
+            updateOrderButtonState();
             window.location.href = "orders.html";
         } else {
             alert("Fehler: " + (data.message || "Unbekannter Fehler"));

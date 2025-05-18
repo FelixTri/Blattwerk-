@@ -21,8 +21,12 @@
             Produktverwaltung ein-/ausklappen
         </button>
 
-        <button class="btn btn-secondary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#customer-management" aria-expanded="false" aria-controls="customer-management">
+        <button class="btn btn-secondary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#customer-management-section" aria-expanded="false" aria-controls="customer-management">
           Kundenverwaltung ein-/ausklappen
+        </button>
+
+        <button class="btn btn-secondary mb-3 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#voucher-management-section" aria-expanded="false" aria-controls="product-management-section">
+            Gutscheinverwaltung ein-/ausklappen
         </button>
 
         <div id="product-management-section" class="collapse">
@@ -71,7 +75,7 @@
             </div>
         </div>
         
-        <div id="customer-management" class="collapse">
+        <div id="customer-management-section" class="collapse">
           <h2>Kundenverwaltung</h2>
           <table class="table table-hover" id="customer-table">
             <thead>
@@ -102,12 +106,14 @@
           </div>
         </div>
 
+
+         <div id="voucher-management-section" class="collapse">
         <section>
           <h2>Gutscheine erstellen</h2>
           <form id="voucherForm">
               <label for="amount">Gutscheinbetrag (€):</label>
               <input type="number" id="amount" name="amount" min="1" required>
-              <button type="submit">Gutschein erstellen</button>
+              <button type="submit" class="btn btn-primary mb-3">Gutschein erstellen</button>
           </form>
           <div id="voucherResult"></div>
       </section>
@@ -130,7 +136,7 @@
           </tbody>
         </table>
       </section>
-
+    </div>
     </main>
     <div id="footer-placeholder"></div>
     <script src="../js/admin_products.js"></script>

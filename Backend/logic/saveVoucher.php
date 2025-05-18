@@ -34,14 +34,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $success = $stmt->execute([$code, $amount]);
 
         if ($success) {
-            echo json_encode(["success" => true, "message" => "Gutschein erfolgreich erstellt.", "code" => $code]);
+            echo json_encode(["success" => true, "code" => $code]);
         } else {
-            echo json_encode(["success" => false, "message" => "Fehler beim Erstellen des Gutscheins."]);
+            echo json_encode(["success" => false, "message" => "Datenbankfehler beim Speichern."]);
         }
     } catch (PDOException $e) {
-        echo json_encode(["success" => false, "message" => "SQL Fehler: " . $e->getMessage()]);
+        echo json_encode(["success" => false, "message" => $e->getMessage()]);
     }
-} else {
-    echo json_encode(["success" => false, "message" => "Ungültige Anfrage."]);
 }
-?>
