@@ -14,7 +14,7 @@ class DbAccess {
             echo json_encode([
                 'success' => false,
                 'message' => 'Datenbankverbindung fehlgeschlagen: ' . $e->getMessage() // Fehlermeldung, falls Verbindung fehlschlägt
-            ])
+            ]);
             exit;
         }
     }
