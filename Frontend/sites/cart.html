@@ -48,17 +48,32 @@
             </div>
           
             <div class="form-check mb-3">
-              <input class="form-check-input" type="radio" name="payOption" id="pay-coupon-radio" value="coupon">
-              <label class="form-check-label" for="pay-coupon-radio">
-                Gutscheincode verwenden
+              <input
+                class="form-check-input pay-radio"
+                type="radio"
+                name="payOption"
+                id="pay-custom"
+                value="custom"
+              >
+              <label class="form-check-label" for="pay-custom">
+                Neue Zahlungsmethode angeben
               </label>
-              <input 
-                type="text" 
-                id="coupon-code" 
+              <input
+                type="text"
                 class="form-control form-control-sm mt-1 w-50"
-                placeholder="Dein Code" 
+                id="custom-payment"
+                placeholder="z. B. IBAN oder Kreditkartennummer"
                 disabled
               >
+            </div>
+
+            <div class="mb-3">
+              <label for="voucher-code" class="form-label">Gutscheincode</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="voucher-code" placeholder="Code eingeben">
+                <button class="btn btn-outline-secondary" type="button" id="apply-voucher">Einlösen</button>
+              </div>
+              <div id="voucher-message" class="form-text text-success"></div>
             </div>
           
           </div>

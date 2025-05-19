@@ -59,6 +59,7 @@ if (empty($methods)) {
 // payment_method vs. gift_code auswerten
 $giftCode      = trim($input['gift_code'] ?? '');
 $paymentMethod = trim($input['payment_method'] ?? '');
+$customPayment  = trim($input['custom_payment'] ?? '');
 
 $usedPayment = '';
 $validIds = array_column($methods, 'id');
@@ -80,6 +81,11 @@ if (!empty($paymentMethod)) {
         $usedPayment .= ' + ';
     }
     $usedPayment .= $paymentMethod;
+} elseif (!empty($customPayment)) {
+    if ($usedPayment !== '') {
+        $usedPayment .= ' + ';
+    }
+    $usedPayment .= 'CUSTOM:' . $customPayment;
 }
 
 // Sicherstellen, dass mindestens eine Zahlart vorhanden ist
