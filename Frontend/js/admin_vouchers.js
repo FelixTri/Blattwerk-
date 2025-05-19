@@ -5,14 +5,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const createBtn = document.querySelector('#voucher-create-btn');
   const amountInput = document.querySelector('#voucher-amount');
 
-  async function loadVouchers() { // Gutscheine laden
+  // Gutscheine aus dem Backend laden und in Tabelle anzeigen
+  async function loadVouchers() {
     try {
       const res = await fetch('../../Backend/logic/getVouchers.php');
       const vouchers = await res.json();
 
-      tableBody.innerHTML = ''; 
+      tableBody.innerHTML = ''; // Tabelle leeren
 
-      vouchers.forEach(voucher => { // Darstellung der Gutscheine in einer Tabelle
+      vouchers.forEach(voucher => {
         const statusText = voucher.is_active == 1 ? 'Aktiv' : 'Inaktiv';
         const toggleText = voucher.is_active == 1 ? 'Deaktivieren' : 'Aktivieren';
 
@@ -29,40 +30,43 @@ document.addEventListener('DOMContentLoaded', () => {
         tableBody.appendChild(row);
       });
 
-      bindToggleButtons();
+      bindToggleButtons(); // Nach dem Einfügen Buttons aktivieren
     } catch (err) {
       console.error('Fehler beim Laden der Gutscheine:', err);
     }
   }
 
+  // Gutscheine aktivieren/deaktivieren oder löschen
   function bindToggleButtons() {
-  document.querySelectorAll('.toggle-voucher').forEach(button => {
-    button.addEventListener('click', async () => {
-      const voucherId = button.closest('tr').dataset.id;
+    document.querySelectorAll('.toggle-voucher').forEach(button => {
+      button.addEventListener('click', async () => {
+        const voucherId = button.closest('tr').dataset.id;
 
-      if (!confirm("Diesen Gutschein wirklich löschen?")) return;
+        // Bestätigung zum Löschen
+        if (!confirm("Diesen Gutschein wirklich löschen?")) return;
 
-      try {
-        const res = await fetch('../../Backend/logic/deleteVoucher.php', { // Gutschein löschen
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: `id=${voucherId}`
-        });
+        try {
+          const res = await fetch('../../Backend/logic/deleteVoucher.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `id=${voucherId}`
+          });
 
-        const result = await res.json();
-        if (result.success) {
-          await loadVouchers();
-        } else {
-          alert('Fehler: ' + result.message);
+          const result = await res.json();
+          if (result.success) {
+            await loadVouchers(); // Tabelle neu laden nach Löschung
+          } else {
+            alert('Fehler: ' + result.message);
+          }
+        } catch (err) {
+          console.error('Fehler beim Löschen:', err);
         }
-      } catch (err) {
-        console.error('Fehler beim Löschen:', err);
-      }
+      });
     });
-  });
-}
+  }
 
-  createBtn?.addEventListener('click', async () => { // Gutschein erstellen
+  // Neuen Gutschein erstellen (per Eingabe + Button)
+  createBtn?.addEventListener('click', async () => {
     const amount = parseFloat(amountInput.value);
     if (isNaN(amount) || amount <= 0) {
       alert('Bitte gültigen Betrag eingeben.');
@@ -81,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       let data;
       try {
-        data = JSON.parse(text);
+        data = JSON.parse(text); // Antwort als JSON parsen
       } catch (e) {
         alert('Ungültige Antwort vom Server.');
         return;
@@ -89,8 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (data.success) {
         alert('Gutschein erstellt: ' + data.code);
-        amountInput.value = '';
-        await loadVouchers(); 
+        amountInput.value = '';      // Eingabefeld leeren
+        await loadVouchers();        // Tabelle aktualisieren
       } else {
         alert('Fehler: ' + data.message);
       }
@@ -99,5 +103,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  loadVouchers(); 
+  loadVouchers(); // Direkt beim Laden der Seite Gutscheine anzeigen
 });

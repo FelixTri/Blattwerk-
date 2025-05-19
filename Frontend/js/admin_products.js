@@ -1,3 +1,4 @@
+// Produktverwaltung für Admins
 document.addEventListener('DOMContentLoaded', () => {
   const productList     = document.getElementById('product-list');
   const createBtn       = document.getElementById('create-product');
@@ -5,8 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const form            = document.getElementById('product-form');
   const categorySelect  = form.querySelector('select[name="category_id"]');
 
-  // Produktverwaltung im Admin-Bereich
-  async function loadCategories() { // Kategorien laden
+  // Kategorien aus dem Backend laden und im Dropdown anzeigen
+  async function loadCategories() {
     const res  = await fetch('../../Backend/logic/requestHandler.php?action=getCategories');
     const cats = await res.json();
     categorySelect.innerHTML = '<option value="">Bitte wählen</option>';
@@ -18,9 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-
-  async function loadProducts() { // Produktliste laden
-    const res      = await fetch('../../Backend/logic/requestHandler.php?action=getProducts');
+  // Produkte aus dem Backend laden und als Karten anzeigen
+  async function loadProducts() {
+    const res = await fetch('../../Backend/logic/requestHandler.php?action=getProducts');
     if (!res.ok) {
       console.error('Fehler beim Laden der Produkte');
       return;
@@ -41,23 +42,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-
+  // Initiale Daten laden
   loadCategories();
   loadProducts();
 
-
+  // Formular für neues Produkt anzeigen
   createBtn.onclick = () => {
     form.reset();
     form.id.value = '';
-    loadCategories();           
+    loadCategories(); // Kategorien erneut laden (für aktuelle Auswahl)
     formPlaceholder.style.display = 'block';
   };
 
-
+  // Klicks auf Bearbeiten- oder Löschen-Buttons verarbeiten
   productList.onclick = async e => {
     const id = e.target.dataset.id;
     if (!id) return;
 
+    // Produktdaten laden und ins Formular einfügen
     if (e.target.classList.contains('edit')) {
       await loadCategories();
       const res  = await fetch(`../../Backend/logic/requestHandler.php?action=getProduct&id=${id}`);
@@ -72,13 +74,14 @@ document.addEventListener('DOMContentLoaded', () => {
       formPlaceholder.style.display = 'block';
     }
 
-    if (e.target.classList.contains('delete')) { // Produkt löschen
+    // Produkt löschen nach Bestätigung
+    if (e.target.classList.contains('delete')) {
       if (confirm('Produkt wirklich löschen?')) {
         try {
           const res  = await fetch(`../../Backend/logic/requestHandler.php?action=deleteProduct&id=${id}`);
           const json = await res.json();
           if (json.success) {
-            loadProducts();
+            loadProducts(); // Liste neu laden
           } else {
             console.error('Löschen fehlgeschlagen:', json);
             alert('Löschen fehlgeschlagen: ' + (json.error || 'Unbekannter Fehler'));
@@ -91,10 +94,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // Produkt speichern (neu oder aktualisiert)
   form.onsubmit = async e => {
     e.preventDefault();
     const fd     = new FormData(form);
-    const action = form.id.value ? 'updateProduct' : 'createProduct'; // Produkt erstellen oder aktualisieren
+    const action = form.id.value ? 'updateProduct' : 'createProduct';
 
     await fetch(`../../Backend/logic/requestHandler.php?action=${action}`, {
       method: 'POST',
@@ -102,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     formPlaceholder.style.display = 'none';
-    loadProducts();
+    loadProducts(); // Liste nach dem Speichern aktualisieren
   };
-  
 });

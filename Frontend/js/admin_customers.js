@@ -1,13 +1,14 @@
+// Kundenverwaltung für Admins
+
 const API = '../../Backend/logic/requestHandler.php';
 
-
-// Kundenverwaltung für Admins
 document.addEventListener('DOMContentLoaded', () => {
   const customerTbody = document.querySelector('#customer-table tbody');
   const ordersSection = document.getElementById('order-details');
   const ordersTbody   = document.querySelector('#orders-table tbody');
   const custNameSpan  = document.getElementById('cust-name');
 
+  // Kunden aus dem Backend laden
   async function loadCustomers() {
     customerTbody.innerHTML = '';
     try {
@@ -45,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Bei Klick auf Details-Button Bestellung des jeweiligen Kunden laden und anzeigen
   function bindDetailButtons() {
     document.querySelectorAll('.view-orders').forEach(btn => {
       btn.onclick = async () => {
@@ -77,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Aktivieren / Deaktivieren von Benutzern
   function bindToggleButtons() {
     document.querySelectorAll('.toggle-active').forEach(btn => {
       btn.onclick = async () => {
@@ -110,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Bei Klick auf Artikel-Button alle Produkte einer Bestellung anzeigen oder ausblenden
   function bindItemButtons() {
     document.querySelectorAll('.view-items').forEach(btn => {
       btn.onclick = async () => {

@@ -1,15 +1,17 @@
 // Bestellungen anzeigen
 // zeigt eingeloggtem User die eigenen Bestellungen an
+
 document.addEventListener('DOMContentLoaded', () => {
     fetchOrders();
   
+      // Holt Bestellungen vom Backend und übergibt sie an die Darstellung
     async function fetchOrders() { // Bestellungen vom Server holen
       if (!document.getElementById('orders-list')) return;
       try {
         const res = await fetch('../../Backend/logic/getOrders.php', { credentials: 'include' });
         const data = await res.json();
         if (!data.success) throw new Error(data.message);
-        renderOrders(data.orders);
+        renderOrders(data.orders); // Bestellungen anzeigen
       } catch (err) {
         const list = document.getElementById('orders-list');
         if (!list) return;
@@ -18,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   
+    // Wandelt die Bestellungen in HTML um
     function renderOrders(orders) { // Bestellungen in HTML umwandeln
       const list = document.getElementById('orders-list');
       if (orders.length === 0) {
@@ -56,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
       list.innerHTML = html;
     }
   
+    // Lädt Details zu einer bestimmten Bestellung
     window.loadDetails = async function(orderId) {
       try {
         const res = await fetch(
@@ -70,8 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
   
-    // Bestelldetails anzeigen
-    function showDetails(order) {
+  // Zeigt die einzelnen Artikel einer Bestellung in einer Tabelle
+  function showDetails(order) {
       let html = `
         <h2 class="mt-4">
           Bestellung #${order.id} 
@@ -103,6 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
       const det = document.getElementById('order-details');
       det.innerHTML = html;
-      det.style.display = 'block';
+      det.style.display = 'block'; // Details sichtbar machen
     }
   });
