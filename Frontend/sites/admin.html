@@ -42,7 +42,6 @@
             <div id="form-placeholder" style="display:none;">
               <form id="product-form" enctype="multipart/form-data" class="border p-4 rounded bg-light">
                 <input type="hidden" name="id" />
-
                 <div class="mb-3">
                   <label class="form-label">Name:</label>
                   <input type="text" name="name" class="form-control" required>
@@ -106,36 +105,46 @@
           </div>
         </div>
 
-
-         <div id="voucher-management-section" class="collapse">
+        <div id="voucher-management-section" class="collapse">
+        <!-- Gutschein erstellen -->
         <section>
           <h2>Gutscheine erstellen</h2>
           <form id="voucherForm">
-              <label for="amount">Gutscheinbetrag (€):</label>
-              <input type="number" id="amount" name="amount" min="1" required>
-              <button type="submit" class="btn btn-primary mb-3">Gutschein erstellen</button>
+            <div class="mb-3">
+              <label for="amount" class="form-label">Gutscheinbetrag (€):</label>
+              <input type="number" id="amount" name="amount" min="1" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="expires" class="form-label">Gültig bis:</label>
+              <input type="date" id="expires" name="expires" class="form-control">
+            </div>
+
+            <button type="submit" class="btn btn-primary mb-3">Gutschein erstellen</button>
           </form>
           <div id="voucherResult"></div>
-      </section>
+        </section>
 
-      <section>
-        <h2>Gutscheine Übersicht</h2>
-        <table id="voucher-table" class="table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Code</th>
-              <th>Betrag (€)</th>
-              <th>Status</th>
-              <th>Erstellt am</th>
-              <th>Aktionen</th>
-            </tr>
-          </thead>
-          <tbody>
-          <!-- Gutscheine dynamisch eingefügt -->
-          </tbody>
-        </table>
-      </section>
+        <!-- Übersicht -->
+        <section>
+          <h2>Gutscheine Übersicht</h2>
+          <table id="voucher-table" class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Code</th>
+                <th>Betrag (€)</th>
+                <th>Status</th>
+                <th>Erstellt am</th>
+                <th>Gültig bis</th> <!-- Neue Spalte -->
+                <th>Aktionen</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Gutscheine dynamisch eingefügt -->
+            </tbody>
+          </table>
+        </section>
     </div>
     </main>
     <div id="footer-placeholder"></div>

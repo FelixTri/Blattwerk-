@@ -1,5 +1,4 @@
-<?php
-// Einzelnen Gutschein per Code abrufen
+<?php // Gutschein(e) abrufen
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -9,12 +8,17 @@ require_once(__DIR__ . '/../helpers/dbaccess.php');
 
 $pdo = DbAccess::connect();
 
-// Wenn ein Code übergeben wurde, einen spezifischen Gutschein zurückgeben
+// Einzelnen Gutschein abrufen
 if (isset($_GET['code'])) {
     $code = $_GET['code'];
 
     try {
-        $stmt = $pdo->prepare("SELECT code, amount, is_active AS active FROM vouchers WHERE code = :code LIMIT 1");
+        $stmt = $pdo->prepare("
+            SELECT code, amount, is_active AS active, expires_at
+            FROM vouchers
+            WHERE code = :code
+            LIMIT 1
+        ");
         $stmt->bindParam(':code', $code, PDO::PARAM_STR);
         $stmt->execute();
         $voucher = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -30,9 +34,13 @@ if (isset($_GET['code'])) {
     exit;
 }
 
-// Fallback: Alle Gutscheine auflisten
+// Alle Gutscheine abrufen (inkl. Ablaufdatum)
 try {
-    $stmt = $pdo->query("SELECT id, code, amount, is_active, created_at FROM vouchers ORDER BY created_at DESC");
+    $stmt = $pdo->query("
+        SELECT id, code, amount, is_active, created_at, expires_at
+        FROM vouchers
+        ORDER BY created_at DESC
+    ");
     $vouchers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode($vouchers);
 } catch (PDOException $e) {

@@ -6,7 +6,7 @@ USE blattwerk_shop;
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Erstellungszeit: 27. Apr 2025 um 21:18
+-- Erstellungszeit: 19. Mai 2025 um 21:53
 -- Server-Version: 10.4.28-MariaDB
 -- PHP-Version: 8.2.4
 
@@ -90,7 +90,8 @@ INSERT INTO `invoices` (`id`, `order_id`, `invoice_number`, `created_at`) VALUES
 (4, 7, 'RW2025-000004', '2025-04-26 16:27:04'),
 (5, 10, 'RW2025-000005', '2025-04-26 20:58:16'),
 (6, 12, 'RW2025-000006', '2025-04-26 21:09:37'),
-(7, 13, 'RW2025-000007', '2025-04-27 21:06:47');
+(7, 13, 'RW2025-000007', '2025-04-27 21:06:47'),
+(8, 18, 'RW2025-000008', '2025-05-19 20:56:41');
 
 -- --------------------------------------------------------
 
@@ -122,7 +123,12 @@ INSERT INTO `orders` (`id`, `user_id`, `payment_used`, `created_at`) VALUES
 (10, 1, 'stored', '2025-04-26 20:58:09'),
 (11, 1, 'stored', '2025-04-26 21:03:54'),
 (12, 1, 'stored', '2025-04-26 21:09:35'),
-(13, 1, 'stored', '2025-04-27 21:06:43');
+(13, 1, 'stored', '2025-04-27 21:06:43'),
+(14, 1, 'GUTSCHEIN:61200', '2025-05-19 17:20:10'),
+(15, 1, 'stored', '2025-05-19 19:21:19'),
+(16, 1, 'stored', '2025-05-19 20:23:48'),
+(17, 1, 'stored', '2025-05-19 20:29:41'),
+(18, 1, 'CUSTOM:1234 1412 1242 1241', '2025-05-19 20:31:47');
 
 -- --------------------------------------------------------
 
@@ -158,7 +164,14 @@ INSERT INTO `order_items` (`order_id`, `product_id`, `quantity`) VALUES
 (7, 2, 3),
 (8, 2, 1),
 (10, 2, 1),
-(13, 1, 1);
+(13, 1, 1),
+(14, 1, 1),
+(14, 3, 1),
+(15, 2, 2),
+(15, 3, 1),
+(16, 3, 1),
+(17, 2, 1),
+(18, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -189,6 +202,25 @@ INSERT INTO `products` (`id`, `name`, `description`, `price`, `rating`, `image`,
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `saved_cart`
+--
+
+CREATE TABLE `saved_cart` (
+  `user_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Daten für Tabelle `saved_cart`
+--
+
+INSERT INTO `saved_cart` (`user_id`, `product_id`, `quantity`) VALUES
+(1, 2, 3);
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `users`
 --
 
@@ -215,8 +247,37 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `salutation`, `first_name`, `last_name`, `address`, `postal_code`, `city`, `email`, `username`, `password`, `payment_info`, `role`, `active`) VALUES
 (1, 'Herr', 'Christoph', 'Bout', 'Krafft-Ebinggasse 4', '1140', 'Wien', 'boutchristoph@gmail.com', 'wi23b005', '$2y$10$a5mEspqKZQeJaw2dfe/oreI.zZM0lnOSzA/N6zoNd34kdyweyP7qG', 'AT22 0000 0000 0000', 'user', 1),
 (3, 'Herr', 'Christoph', 'Bout', 'Krafft-Ebinggase 4', '1140', 'Wien', 'wi23b005@technikum-wien.at', 'wi23b005_01', '$2y$10$G4uRa8k/OE2F8APgiXH.g.0A2Bsbki1KW66MC9wecvLyvLBksNJ3S', '', 'user', 1),
-(5, 'Herr', 'Admin', 'Admin', 'Admin', '0000', 'Admin', 'admin@admin.com', 'admin', '$2y$10$YWsan0hoEPPOABlfjfUqzeIXqJVt0XdpLbLBbcQoUuKcoBJHpaz5W', 'IBAN', 'admin', 1),
-(6, 'Herr', 'User', 'User', 'User', '0000', 'User', 'user@user.com', 'user', '$2y$10$3qkPY0YOjuhWc/dVmmo16OwKgXs1QDjkdVyqBP929DQLHJRMQuWym', 'IBAN', 'user', 1);
+(5, 'Herr', 'Admin', 'Admin', 'Aidmin', '0000', 'Admin', 'admin@admin.com', 'admin', '$2y$10$YWsan0hoEPPOABlfjfUqzeIXqJVt0XdpLbLBbcQoUuKcoBJHpaz5W', '', 'admin', 1),
+(6, 'Herr', 'User', 'User', 'User', '0000', 'User', 'user@user.com', 'user', '$2y$10$3qkPY0YOjuhWc/dVmmo16OwKgXs1QDjkdVyqBP929DQLHJRMQuWym', '', 'user', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `vouchers`
+--
+
+CREATE TABLE `vouchers` (
+  `id` int(11) NOT NULL,
+  `code` varchar(5) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `expires_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Daten für Tabelle `vouchers`
+--
+
+INSERT INTO `vouchers` (`id`, `code`, `amount`, `is_active`, `created_at`, `expires_at`) VALUES
+(1, '61200', 50.00, 1, '2025-05-19 15:19:48', NULL),
+(2, '07495', 5.00, 1, '2025-05-19 17:22:42', NULL),
+(3, '14266', 10.00, 1, '2025-05-19 19:13:22', '2026-05-07 00:00:00'),
+(4, '67985', 10.00, 1, '2025-05-19 19:15:36', '2025-05-01 00:00:00'),
+(5, '34238', 5.00, 1, '2025-05-19 19:16:56', '2025-05-25 00:00:00'),
+(6, '53526', 10.00, 1, '2025-05-19 19:23:11', '2025-05-24 00:00:00'),
+(20, '87923', 10.00, 1, '2025-05-19 19:41:47', '2025-05-31 00:00:00'),
+(21, '41177', 12.00, 1, '2025-05-19 19:41:57', '2002-11-12 00:00:00');
 
 --
 -- Indizes der exportierten Tabellen
@@ -267,12 +328,26 @@ ALTER TABLE `products`
   ADD KEY `category_id` (`category_id`);
 
 --
+-- Indizes für die Tabelle `saved_cart`
+--
+ALTER TABLE `saved_cart`
+  ADD PRIMARY KEY (`user_id`,`product_id`),
+  ADD KEY `product_id` (`product_id`);
+
+--
 -- Indizes für die Tabelle `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`),
   ADD UNIQUE KEY `username` (`username`);
+
+--
+-- Indizes für die Tabelle `vouchers`
+--
+ALTER TABLE `vouchers`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `code` (`code`);
 
 --
 -- AUTO_INCREMENT für exportierte Tabellen
@@ -294,13 +369,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT für Tabelle `invoices`
 --
 ALTER TABLE `invoices`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT für Tabelle `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT für Tabelle `products`
@@ -313,6 +388,12 @@ ALTER TABLE `products`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT für Tabelle `vouchers`
+--
+ALTER TABLE `vouchers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- Constraints der exportierten Tabellen
@@ -336,25 +417,14 @@ ALTER TABLE `invoices`
 --
 ALTER TABLE `products`
   ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`);
+
+--
+-- Constraints der Tabelle `saved_cart`
+--
+ALTER TABLE `saved_cart`
+  ADD CONSTRAINT `saved_cart_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `saved_cart_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
 COMMIT;
-
-
-CREATE TABLE vouchers (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    code VARCHAR(5) UNIQUE NOT NULL,
-    amount DECIMAL(10,2) NOT NULL,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE saved_cart (
-    user_id     INT NOT NULL,
-    product_id  INT NOT NULL,
-    quantity    INT NOT NULL DEFAULT 1,
-    PRIMARY KEY (user_id, product_id),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

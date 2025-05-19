@@ -1,9 +1,10 @@
 // Gutscheinverwaltung im Admin-Bereich
 
 document.addEventListener('DOMContentLoaded', () => {
-  const tableBody = document.querySelector('#voucher-table tbody');
-  const createBtn = document.querySelector('#voucher-create-btn');
-  const amountInput = document.querySelector('#voucher-amount');
+  const tableBody   = document.querySelector('#voucher-table tbody');
+  const createForm  = document.querySelector('#voucherForm');
+  const amountInput = document.querySelector('#amount');
+  const expiresInput = document.querySelector('#expires'); // NEU
 
   // Gutscheine aus dem Backend laden und in Tabelle anzeigen
   async function loadVouchers() {
@@ -16,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
       vouchers.forEach(voucher => {
         const statusText = voucher.is_active == 1 ? 'Aktiv' : 'Inaktiv';
         const toggleText = voucher.is_active == 1 ? 'Deaktivieren' : 'Aktivieren';
+        const expiresAt = voucher.expires_at ? voucher.expires_at.split(" ")[0] : '-';
 
         const row = document.createElement('tr');
         row.dataset.id = voucher.id;
@@ -25,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>${parseFloat(voucher.amount).toFixed(2)} €</td>
           <td>${statusText}</td>
           <td>${voucher.created_at}</td>
+          <td>${expiresAt}</td>
           <td><button class="btn btn-sm btn-primary toggle-voucher">${toggleText}</button></td>
         `;
         tableBody.appendChild(row);
@@ -42,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
       button.addEventListener('click', async () => {
         const voucherId = button.closest('tr').dataset.id;
 
-        // Bestätigung zum Löschen
         if (!confirm("Diesen Gutschein wirklich löschen?")) return;
 
         try {
@@ -65,9 +67,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Neuen Gutschein erstellen (per Eingabe + Button)
-  createBtn?.addEventListener('click', async () => {
+  // Neuen Gutschein erstellen
+  createForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
     const amount = parseFloat(amountInput.value);
+    const expires = expiresInput?.value || '';
+
     if (isNaN(amount) || amount <= 0) {
       alert('Bitte gültigen Betrag eingeben.');
       return;
@@ -77,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('../../Backend/logic/saveVoucher.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `amount=${amount}`
+        body: `amount=${encodeURIComponent(amount)}&expires=${encodeURIComponent(expires)}`
       });
 
       const text = await res.text();
@@ -85,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       let data;
       try {
-        data = JSON.parse(text); // Antwort als JSON parsen
+        data = JSON.parse(text);
       } catch (e) {
         alert('Ungültige Antwort vom Server.');
         return;
@@ -93,15 +99,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (data.success) {
         alert('Gutschein erstellt: ' + data.code);
-        amountInput.value = '';      // Eingabefeld leeren
-        await loadVouchers();        // Tabelle aktualisieren
+        amountInput.value = '';
+        expiresInput.value = '';
+        await loadVouchers();
+
       } else {
         alert('Fehler: ' + data.message);
       }
     } catch (err) {
       console.error('Fehler beim Erstellen des Gutscheins:', err);
+      document.getElementById("voucherResult").textContent = "Verbindungsfehler.";
+      document.getElementById("voucherResult").className = "text-danger";
     }
   });
 
-  loadVouchers(); // Direkt beim Laden der Seite Gutscheine anzeigen
+  loadVouchers(); // Seite initial mit Gutscheinen füllen
 });

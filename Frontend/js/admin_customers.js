@@ -151,40 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   loadCustomers();
-  loadCustomers();
-
-  // Gutscheinformular-Logik
-  const voucherForm = document.getElementById('voucherForm');
-  const voucherResult = document.getElementById('voucherResult');
-
-  if (voucherForm) {
-    voucherForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      const amount = document.getElementById('amount').value;
-
-      try {
-        const response = await fetch('/Blattwerk/Blattwerk-/Backend/logic/saveVoucher.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: `amount=${encodeURIComponent(amount)}`
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          voucherResult.innerHTML = `<p style="color: green;">Gutschein erfolgreich erstellt! Code: <strong>${data.code}</strong></p>`;
-          voucherForm.reset();
-        } else {
-          voucherResult.innerHTML = `<p style="color: red;">Fehler: ${data.message}</p>`;
-        }
-      } catch (error) {
-        voucherResult.innerHTML = `<p style="color: red;">Verbindungsfehler.</p>`;
-      }
-    });
-  }
 
 });
 

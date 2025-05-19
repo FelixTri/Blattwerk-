@@ -200,8 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
             voucherMessage.textContent = "Bitte einen Gutscheincode eingeben.";
             return;
         }
-
-        // Gutschein vom Server prüfen
+    
         fetch(`/Blattwerk/Blattwerk-/Backend/logic/getVouchers.php?code=${encodeURIComponent(code)}`)
             .then(res => res.json())
             .then(data => {
@@ -209,29 +208,38 @@ document.addEventListener("DOMContentLoaded", () => {
                     voucherMessage.textContent = "Ungültiger oder abgelaufener Gutschein.";
                     return;
                 }
-
+    
                 const amount = parseFloat(data.voucher.amount);
                 const active = data.voucher.active;
-
+                const expiresAt = data.voucher.expires_at;
+    
+                // Prüfen ob aktiv
                 if (!active || isNaN(amount)) {
                     voucherMessage.textContent = "Dieser Gutschein ist nicht mehr gültig.";
                     return;
                 }
-
+    
+                // Prüfen ob abgelaufen (wenn expires_at gesetzt ist)
+                if (expiresAt) {
+                    const today = new Date().setHours(0,0,0,0);
+                    const expiry = new Date(expiresAt).setHours(0,0,0,0);
+                    if (expiry < today) {
+                        voucherMessage.textContent = "Dieser Gutschein ist abgelaufen.";
+                        return;
+                    }
+                }
+    
                 const currentText = cartTotalEl.textContent.replace("€", "").replace(",", ".").trim();
                 if (originalTotal === null) {
                     originalTotal = parseFloat(currentText);
                 }
-
-                // Gutscheinbetrag anwenden
+    
                 const abzug = Math.min(originalTotal, amount);
                 const restwert = amount - abzug;
                 const newTotal = Math.max(originalTotal - abzug, 0);
-
-                // Gesamtpreis aktualisieren
+    
                 cartTotalEl.textContent = newTotal.toFixed(2).replace(".", ",") + " €";
-
-                // Info anzeigen
+    
                 voucherMessage.textContent = restwert > 0
                     ? `Gutschein eingelöst: -${abzug.toFixed(2).replace(".", ",")} € – Restwert: ${restwert.toFixed(2).replace(".", ",")} €`
                     : `Gutschein eingelöst: -${abzug.toFixed(2).replace(".", ",")} €`;
@@ -240,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Fehler beim Einlösen:", err);
                 voucherMessage.textContent = "Fehler beim Einlösen des Gutscheins.";
             });
-        });
+    });
 });
 
 
