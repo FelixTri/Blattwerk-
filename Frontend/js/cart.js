@@ -1,6 +1,17 @@
-// cart.js
+// Warenkorb-Management
+// Datei enthält Funktionen zur Verwaltung des Warenkorbs, einschließlich
+// Hinzufügen, Entfernen und Aktualisieren von Produkten im Warenkorb
 
-function addToCart(productId) {
+function updateOrderButtonState() { // Bestellbutton aktivieren/deaktivieren
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const orderButton = document.getElementById("order-button");
+    if (orderButton) {
+        orderButton.disabled = cart.length === 0;
+        orderButton.classList.toggle("disabled", cart.length === 0);
+    }
+}
+
+function addToCart(productId) { // Produkt zum Warenkorb hinzufügen
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const id = parseInt(productId, 10);
 
@@ -14,9 +25,10 @@ function addToCart(productId) {
     localStorage.setItem("cart", JSON.stringify(cart));
     updateCartCount();
     syncCartToBackend();
+    updateOrderButtonState();
 }
 
-function updateCartCount() {
+function updateCartCount() { // Warenkorb-Zähler aktualisieren
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
     const counter = document.getElementById("cart-count");
@@ -25,10 +37,9 @@ function updateCartCount() {
     }
 }
 
-function loadCart() {
+function loadCart() { // Warenkorb laden und anzeigen
     let rawCart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    // Duplikate zusammenfassen
     const cart = [];
     rawCart.forEach(item => {
         const id = parseInt(item.id, 10);
@@ -44,6 +55,8 @@ function loadCart() {
     const cartItems = document.getElementById("cart-items");
     const cartTotal = document.getElementById("cart-total");
 
+    updateOrderButtonState();
+
     if (!cartItems || !cartTotal) return;
 
     cartItems.innerHTML = "";
@@ -57,7 +70,7 @@ function loadCart() {
 
     let processed = 0;
 
-    cart.forEach(item => {
+    cart.forEach(item => { // Prokuktinformationen abrufen
         fetch(`/Blattwerk/Blattwerk-/Backend/logic/getProduct.php?id=${item.id}`)
             .then(res => res.json())
             .then(product => {
@@ -101,7 +114,7 @@ function loadCart() {
     });
 }
 
-function updateQuantity(productId, change) {
+function updateQuantity(productId, change) { // Produktmenge im Warenkorb aktualisieren
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     const id = parseInt(productId, 10);
     const index = cart.findIndex(item => item.id === id);
@@ -117,9 +130,10 @@ function updateQuantity(productId, change) {
     loadCart();
     updateCartCount();
     syncCartToBackend();
+    updateOrderButtonState();
 }
 
-function removeFromCart(productId) {
+function removeFromCart(productId) { // Produkt aus dem Warenkorb entfernen
     const id = parseInt(productId, 10);
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     cart = cart.filter(item => item.id !== id);
@@ -127,9 +141,10 @@ function removeFromCart(productId) {
     loadCart();
     updateCartCount();
     syncCartToBackend();
+    updateOrderButtonState();
 }
 
-function syncCartToBackend() {
+function syncCartToBackend() { // Warenkorb mit Backend synchronisieren
     fetch("/Blattwerk/Blattwerk-/Backend/logic/saveCart.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -148,40 +163,36 @@ function syncCartToBackend() {
 
 document.addEventListener("DOMContentLoaded", () => {
     updateCartCount();
+    updateOrderButtonState();
     if (window.location.pathname.includes("cart.html")) {
         loadCart();
     }
 
-    // 1) Payment‐Section initialisieren
     loadPaymentOptions();
 
-    // 2) Bestell‐Button hooken
     const orderBtn = document.getElementById("order-button");
     if (orderBtn) {
         orderBtn.addEventListener("click", () => submitOrder());
     }
 });
-
-
-function loadPaymentOptions() {
+ 
+function loadPaymentOptions() { // Zahlungsmethoden laden
     const pmContainer = document.getElementById("payment-methods");
     const couponRadio  = document.getElementById("pay-coupon-radio");
     const couponInput  = document.getElementById("coupon-code");
     const orderBtn     = document.getElementById("order-button");
 
     if (!pmContainer || !couponRadio || !couponInput || !orderBtn) {
-        return; // Seite hat keine Zahlungsoptionen
+        return;
     }
 
     couponInput.disabled = true;
 
-    // 1) Gutschein‐Radio: bei Auswahl das Feld aktivieren
     couponRadio.addEventListener("change", () => {
         couponInput.disabled = false;
         document.querySelectorAll(".pay-radio").forEach(r => r.checked = false);
     });
 
-    // 2) Fetch an neues Endpoint
     fetch('../../Backend/logic/getPaymentMethods.php', { credentials: 'include' })
       .then(r => r.json())
       .then(json => {
@@ -195,7 +206,6 @@ function loadPaymentOptions() {
           return;
         }
 
-        // 3) Radio‐Buttons pro Methode rendern
         let html = '';
         json.methods.forEach((m, i) => {
           html += `
@@ -216,7 +226,6 @@ function loadPaymentOptions() {
         });
         pmContainer.innerHTML = html;
 
-        // 4) jede pay-radio sperrt das Gutscheinfeld
         document.querySelectorAll(".pay-radio").forEach(radio =>
           radio.addEventListener("change", () => couponInput.disabled = true)
         );
@@ -226,9 +235,7 @@ function loadPaymentOptions() {
       });
 }
 
-
-// === Bestell‐Submit unverändert, nur liest es now payOption aus ===
-function submitOrder() {
+function submitOrder() { // Bestellung abschicken
     const items = JSON.parse(localStorage.getItem("cart")) || [];
     const sel = document.querySelector('input[name="payOption"]:checked');
     const isCoupon = sel && sel.id === 'pay-coupon-radio';
@@ -253,6 +260,7 @@ function submitOrder() {
             localStorage.removeItem("cart");
             loadCart();
             updateCartCount();
+            updateOrderButtonState();
             window.location.href = "orders.html";
         } else {
             alert("Fehler: " + (data.message || "Unbekannter Fehler"));

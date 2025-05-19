@@ -1,8 +1,9 @@
-<?php
+<?php // User-Registrierung
+// Datei wird aufgerufen, wenn ein neuer User registriert werden soll
 session_start();
 header('Content-Type: application/json');
 
-require_once __DIR__ . '/../helpers/dbaccess.php'; // NEU
+require_once __DIR__ . '/../helpers/dbaccess.php'; // DB-Zugriff
 
 $data = json_decode(file_get_contents('php://input'), true);
 if (!$data) {
@@ -43,7 +44,7 @@ if (
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
 try {
-    $pdo = DbAccess::connect(); // NEU
+    $pdo = DbAccess::connect(); // DB-Zugriff
 
     // Doppelten User prüfen
     $check = $pdo->prepare("SELECT id FROM users WHERE email = ? OR username = ?");
@@ -56,7 +57,7 @@ try {
         exit;
     }
 
-    // Einfügen
+    // Einfügen in Datenbank
     $stmt = $pdo->prepare("
         INSERT INTO users 
         (salutation, first_name, last_name, address, postal_code, city, email, username, password, payment_info, role, active)

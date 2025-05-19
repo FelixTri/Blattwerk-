@@ -1,4 +1,6 @@
 <?php
+// Bestellungen abrufen
+// Datei wird aufgerufen, wenn die Bestellungen des eingeloggten Nutzers abgerufen werden sollen
 session_start();
 
 require_once __DIR__ . '/../helpers/dbaccess.php';
@@ -12,7 +14,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 try {
-    $pdo = DbAccess::connect();
+    $pdo = DbAccess::connect(); // DB-Verbindung herstellen
 
     $stmt = $pdo->prepare("
         SELECT

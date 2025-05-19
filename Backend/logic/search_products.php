@@ -3,7 +3,7 @@ require_once __DIR__ . '/../helpers/dbaccess.php';
 
 header('Content-Type: application/json');
 
-try {
+try { // Produkt-Suchfunktion
     $pdo = DbAccess::connect(); 
 
     $query = $_GET['query'] ?? '';
@@ -12,7 +12,7 @@ try {
         FROM products 
         WHERE name LIKE :query OR description LIKE :query
     ");
-    $stmt->execute(['query' => "%$query%"]);
+    $stmt->execute(['query' => "%$query%"]); //Statement zum Abrufen der Produkte
 
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode($results);

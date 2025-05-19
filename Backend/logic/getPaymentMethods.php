@@ -1,4 +1,6 @@
 <?php
+// Zahlungsarten abrufen
+// Datei wird aufgerufen, wenn die Zahlungsarten des eingeloggten Nutzers abgerufen werden sollen
 session_start();
 header('Content-Type: application/json');
 
@@ -7,7 +9,7 @@ if (!empty($_SESSION['user_id'])) {
 
 
     try {
-            $pdo = DbAccess::connect();
+            $pdo = DbAccess::connect();  // DB-Verbindung herstellen
             
             $stmt = $pdo->prepare("SELECT payment_info FROM users WHERE id = ?");
             $stmt->execute([ (int)$_SESSION['user_id'] ]);

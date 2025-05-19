@@ -1,5 +1,4 @@
-// editAccount.js
-
+// Accountdaten anzeigen und bearbeiten
 document.addEventListener("DOMContentLoaded", () => {
   // Felder beim Laden vom Server holen
   fetch("../../Backend/logic/requestHandler.php?action=getSessionInfo", { credentials: 'include' })

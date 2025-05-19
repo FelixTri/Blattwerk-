@@ -1,9 +1,9 @@
-<?php
+<?php // Rechnung erstellen
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 header('Content-Type: text/html; charset=utf-8');
 session_start();
-require_once __DIR__ . '/../models/Order.class.php';
+require_once __DIR__ . '/../models/Order.class.php'; // Abrufen der Bestellungsdaten
 
 if (!isset($_SESSION['user_id']) || !isset($_GET['orderId'])) {
     http_response_code(403);

@@ -1,3 +1,5 @@
+// Login Logik
+// leitet eingegebene Daten an den Backend-Login-Handler weiter
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
   const loginError = document.getElementById("loginError");

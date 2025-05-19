@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const form            = document.getElementById('product-form');
   const categorySelect  = form.querySelector('select[name="category_id"]');
 
-  
-  async function loadCategories() {
+  // Produktverwaltung im Admin-Bereich
+  async function loadCategories() { // Kategorien laden
     const res  = await fetch('../../Backend/logic/requestHandler.php?action=getCategories');
     const cats = await res.json();
     categorySelect.innerHTML = '<option value="">Bitte wählen</option>';
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  async function loadProducts() {
+  async function loadProducts() { // Produktliste laden
     const res      = await fetch('../../Backend/logic/requestHandler.php?action=getProducts');
     if (!res.ok) {
       console.error('Fehler beim Laden der Produkte');
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
       formPlaceholder.style.display = 'block';
     }
 
-    if (e.target.classList.contains('delete')) {
+    if (e.target.classList.contains('delete')) { // Produkt löschen
       if (confirm('Produkt wirklich löschen?')) {
         try {
           const res  = await fetch(`../../Backend/logic/requestHandler.php?action=deleteProduct&id=${id}`);
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
   form.onsubmit = async e => {
     e.preventDefault();
     const fd     = new FormData(form);
-    const action = form.id.value ? 'updateProduct' : 'createProduct';
+    const action = form.id.value ? 'updateProduct' : 'createProduct'; // Produkt erstellen oder aktualisieren
 
     await fetch(`../../Backend/logic/requestHandler.php?action=${action}`, {
       method: 'POST',
