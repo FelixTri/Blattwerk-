@@ -1,7 +1,9 @@
 <?php
+// Bestelldetails abrufen
+// Datei wird aufgerufen, wenn die Bestelldetails abgerufen werden sollen
 session_start();
 
-require_once __DIR__ . '/../helpers/dbaccess.php';
+require_once __DIR__ . '/../helpers/dbaccess.php'; // DB-Zugriff
 
 header('Content-Type: application/json');
 

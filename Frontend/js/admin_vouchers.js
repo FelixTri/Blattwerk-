@@ -1,16 +1,18 @@
+// Gutscheinverwaltung im Admin-Bereich
+
 document.addEventListener('DOMContentLoaded', () => {
   const tableBody = document.querySelector('#voucher-table tbody');
   const createBtn = document.querySelector('#voucher-create-btn');
   const amountInput = document.querySelector('#voucher-amount');
 
-  async function loadVouchers() {
+  async function loadVouchers() { // Gutscheine laden
     try {
       const res = await fetch('../../Backend/logic/getVouchers.php');
       const vouchers = await res.json();
 
       tableBody.innerHTML = ''; 
 
-      vouchers.forEach(voucher => {
+      vouchers.forEach(voucher => { // Darstellung der Gutscheine in einer Tabelle
         const statusText = voucher.is_active == 1 ? 'Aktiv' : 'Inaktiv';
         const toggleText = voucher.is_active == 1 ? 'Deaktivieren' : 'Aktivieren';
 
@@ -41,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!confirm("Diesen Gutschein wirklich löschen?")) return;
 
       try {
-        const res = await fetch('../../Backend/logic/deleteVoucher.php', {
+        const res = await fetch('../../Backend/logic/deleteVoucher.php', { // Gutschein löschen
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: `id=${voucherId}`
@@ -60,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 }
 
-  createBtn?.addEventListener('click', async () => {
+  createBtn?.addEventListener('click', async () => { // Gutschein erstellen
     const amount = parseFloat(amountInput.value);
     if (isNaN(amount) || amount <= 0) {
       alert('Bitte gültigen Betrag eingeben.');

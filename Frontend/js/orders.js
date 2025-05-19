@@ -1,7 +1,9 @@
+// Bestellungen anzeigen
+// zeigt eingeloggtem User die eigenen Bestellungen an
 document.addEventListener('DOMContentLoaded', () => {
     fetchOrders();
   
-    async function fetchOrders() {
+    async function fetchOrders() { // Bestellungen vom Server holen
       if (!document.getElementById('orders-list')) return;
       try {
         const res = await fetch('../../Backend/logic/getOrders.php', { credentials: 'include' });
@@ -16,14 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   
-    function renderOrders(orders) {
+    function renderOrders(orders) { // Bestellungen in HTML umwandeln
       const list = document.getElementById('orders-list');
       if (orders.length === 0) {
         list.innerHTML = '<p class="text-muted">Keine Bestellungen vorhanden.</p>';
         return;
       }
   
-      // Bootstrap list-group
+      // Liste der Bestellungen
       let html = '<ul class="list-group">';
       orders.forEach(o => {
         const date = new Date(o.created_at).toLocaleDateString('de-DE');
@@ -54,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
       list.innerHTML = html;
     }
   
-    // Expose these functions globally so inline onclicks can call them
     window.loadDetails = async function(orderId) {
       try {
         const res = await fetch(
@@ -69,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
   
+    // Bestelldetails anzeigen
     function showDetails(order) {
       let html = `
         <h2 class="mt-4">

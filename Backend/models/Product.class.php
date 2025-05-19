@@ -1,4 +1,5 @@
-<?php
+<?php // Schnittstelle für Produkte
+// Abrufen von Proukten anhand ihrer IDs
 class Product {
     private $pdo;
 

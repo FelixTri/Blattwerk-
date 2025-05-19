@@ -1,8 +1,8 @@
-<?php
+<?php // Warenkorb speichern
 session_start();
 header('Content-Type: application/json');
 
-require_once __DIR__ . '/../helpers/dbaccess.php'; // Neu: Verbindung über Klasse
+require_once __DIR__ . '/../helpers/dbaccess.php'; // DB-Zugriff
 
 // Nur eingeloggte Nutzer dürfen den Warenkorb speichern
 if (!isset($_SESSION['user_id'])) {

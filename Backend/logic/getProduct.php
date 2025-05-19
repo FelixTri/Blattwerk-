@@ -1,5 +1,6 @@
-<?php
-require_once __DIR__ . '/../helpers/dbaccess.php';
+<?php // Produktdetails abrufen
+// Datei wird aufgerufen, wenn die Produktdetails abgerufen werden sollen
+require_once __DIR__ . '/../helpers/dbaccess.php'; // DB-Zugriff
 
 header('Content-Type: application/json');
 
@@ -10,7 +11,7 @@ if ($id <= 0) {
 }
 
 try {
-    $pdo = DbAccess::connect();
+    $pdo = DbAccess::connect(); // DB-Zugriff
 
     $sql = "
         SELECT
@@ -19,9 +20,9 @@ try {
         FROM products p
         LEFT JOIN categories c ON p.category_id = c.id
         WHERE p.id = ?
-    ";
+    ";  // SQL-Statement zum Abrufen der Produktdetails
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$id]);
+    $stmt->execute([$id]); 
 
     $product = $stmt->fetch(PDO::FETCH_ASSOC);
 

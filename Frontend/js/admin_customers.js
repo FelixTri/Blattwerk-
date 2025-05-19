@@ -1,5 +1,7 @@
 const API = '../../Backend/logic/requestHandler.php';
 
+
+// Kundenverwaltung für Admins
 document.addEventListener('DOMContentLoaded', () => {
   const customerTbody = document.querySelector('#customer-table tbody');
   const ordersSection = document.getElementById('order-details');
@@ -147,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadCustomers();
   loadCustomers();
 
-  // === Gutscheinformular-Logik ===
+  // Gutscheinformular-Logik
   const voucherForm = document.getElementById('voucherForm');
   const voucherResult = document.getElementById('voucherResult');
 

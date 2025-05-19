@@ -1,4 +1,4 @@
-<?php
+<?php // Schnittstelle für wichtige Backend-Funktionen
 session_start();
 
 require_once __DIR__ . '/../helpers/dbaccess.php';
@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 
 $action = $_GET['action'] ?? '';
 
-switch ($action) {
+switch ($action) { // Aktionen basierend auf dem Parameter 'action'
 
     case 'addToCart':
         $productId = $_POST['productId'] ?? null;

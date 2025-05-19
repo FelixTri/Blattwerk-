@@ -1,11 +1,12 @@
 <?php
-// Fehlerausgabe deaktivieren, nur JSON zurückliefern
+// Accountdaten aktualisieren
+// Datei wird aufgerufen, wenn der Benutzer seine Accountdaten aktualisiert
 ini_set('display_errors', 0);
 error_reporting(0);
 header('Content-Type: application/json');
 session_start();
 
-require_once __DIR__ . '/../config/dbaccess.php';
+require_once __DIR__ . '/../config/dbaccess.php'; // DB-Zugriff
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(403);
@@ -23,7 +24,7 @@ if (!$data || !is_array($data)) {
 try {
     $pdo = DbAccess::connect();
 
-    // Account updaten, inkl. payment_info
+    // Accountdaten updaten
     $stmt = $pdo->prepare("
         UPDATE users
            SET salutation    = :salutation,

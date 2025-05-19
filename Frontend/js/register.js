@@ -1,4 +1,4 @@
-// register.js
+// Registrierungs-Seite
 
 document.addEventListener("DOMContentLoaded", () => {
     const registrationForm = document.getElementById('registrationForm');
@@ -51,8 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(data => {
         if (data.success) {
           alert('Registrierung erfolgreich! Bitte melde dich jetzt an.');
-          // Optional: Weiterleitung
-          // window.location.href = '../sites/login.html';
+        
         } else {
           alert('Registrierung fehlgeschlagen: ' + (data.message || 'Unbekannter Fehler'));
         }

@@ -59,14 +59,14 @@ document.addEventListener("DOMContentLoaded", () => {
                         `;
                     }
 
-                    if (user.role === "admin") {
+                    if (user.role === "admin") { // Admin-Bereich anzeigen
                         nav.innerHTML += `
                             <li class="nav-item">
                             <a class="nav-link" href="${frontendPath}sites/admin.html">Adminbereich</a>
                             </li>`;
                     }
 
-                    if (user.role !== "guest") {
+                    if (user.role !== "guest") { // Eingeloggte User sehen „Mein Account“ und „Logout“
                         nav.innerHTML += `
                             <li class="nav-item">
                             <a class="nav-link" href="${frontendPath}sites/account.html">Mein Account</a>

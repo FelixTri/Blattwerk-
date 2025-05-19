@@ -1,8 +1,9 @@
-<?php
+<?php // User-Login
+// Datei wird aufgerufen, wenn der User sich einloggen möchte
 session_start();
 header('Content-Type: application/json');
 
-require_once __DIR__ . '/../helpers/dbaccess.php'; // eingebunden!
+require_once __DIR__ . '/../helpers/dbaccess.php'; // DB-Zugriff
 
 // Request‐Body parsen
 $data = json_decode(file_get_contents('php://input'), true);
@@ -17,7 +18,7 @@ if (!$data) {
 $email    = $data['email']    ?? '';
 $password = $data['password'] ?? '';
 $remember = $data['remember'] ?? false;
-
+// Login‐Daten validieren
 try {
     $pdo = DbAccess::connect();
 
@@ -31,7 +32,7 @@ try {
     $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Auth prüfen
+    // Passwort/Email/User prüfen
     if (!$user || !password_verify($password, $user['password'])) {
         echo json_encode([
             'success' => false,

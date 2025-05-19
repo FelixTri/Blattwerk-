@@ -1,6 +1,8 @@
-// cart.js
+// Warenkorb-Management
+// Datei enthält Funktionen zur Verwaltung des Warenkorbs, einschließlich
+// Hinzufügen, Entfernen und Aktualisieren von Produkten im Warenkorb
 
-function updateOrderButtonState() {
+function updateOrderButtonState() { // Bestellbutton aktivieren/deaktivieren
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const orderButton = document.getElementById("order-button");
     if (orderButton) {
@@ -9,7 +11,7 @@ function updateOrderButtonState() {
     }
 }
 
-function addToCart(productId) {
+function addToCart(productId) { // Produkt zum Warenkorb hinzufügen
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const id = parseInt(productId, 10);
 
@@ -26,7 +28,7 @@ function addToCart(productId) {
     updateOrderButtonState();
 }
 
-function updateCartCount() {
+function updateCartCount() { // Warenkorb-Zähler aktualisieren
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
     const counter = document.getElementById("cart-count");
@@ -35,7 +37,7 @@ function updateCartCount() {
     }
 }
 
-function loadCart() {
+function loadCart() { // Warenkorb laden und anzeigen
     let rawCart = JSON.parse(localStorage.getItem("cart")) || [];
 
     const cart = [];
@@ -68,7 +70,7 @@ function loadCart() {
 
     let processed = 0;
 
-    cart.forEach(item => {
+    cart.forEach(item => { // Prokuktinformationen abrufen
         fetch(`/Blattwerk/Blattwerk-/Backend/logic/getProduct.php?id=${item.id}`)
             .then(res => res.json())
             .then(product => {
@@ -112,7 +114,7 @@ function loadCart() {
     });
 }
 
-function updateQuantity(productId, change) {
+function updateQuantity(productId, change) { // Produktmenge im Warenkorb aktualisieren
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     const id = parseInt(productId, 10);
     const index = cart.findIndex(item => item.id === id);
@@ -131,7 +133,7 @@ function updateQuantity(productId, change) {
     updateOrderButtonState();
 }
 
-function removeFromCart(productId) {
+function removeFromCart(productId) { // Produkt aus dem Warenkorb entfernen
     const id = parseInt(productId, 10);
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     cart = cart.filter(item => item.id !== id);
@@ -142,7 +144,7 @@ function removeFromCart(productId) {
     updateOrderButtonState();
 }
 
-function syncCartToBackend() {
+function syncCartToBackend() { // Warenkorb mit Backend synchronisieren
     fetch("/Blattwerk/Blattwerk-/Backend/logic/saveCart.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -173,8 +175,8 @@ document.addEventListener("DOMContentLoaded", () => {
         orderBtn.addEventListener("click", () => submitOrder());
     }
 });
-
-function loadPaymentOptions() {
+ 
+function loadPaymentOptions() { // Zahlungsmethoden laden
     const pmContainer = document.getElementById("payment-methods");
     const couponRadio  = document.getElementById("pay-coupon-radio");
     const couponInput  = document.getElementById("coupon-code");
@@ -233,7 +235,7 @@ function loadPaymentOptions() {
       });
 }
 
-function submitOrder() {
+function submitOrder() { // Bestellung abschicken
     const items = JSON.parse(localStorage.getItem("cart")) || [];
     const sel = document.querySelector('input[name="payOption"]:checked');
     const isCoupon = sel && sel.id === 'pay-coupon-radio';

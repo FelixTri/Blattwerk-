@@ -1,6 +1,6 @@
 <?php
 class DbAccess {
-    public static function connect() {
+    public static function connect() { // Funktion, um eine Verbindung zur Datenbank herzustellen
         $host = 'localhost';
         $dbname = 'blattwerk_shop';
         $user = 'root';
@@ -13,8 +13,8 @@ class DbAccess {
             http_response_code(500);
             echo json_encode([
                 'success' => false,
-                'message' => 'Datenbankverbindung fehlgeschlagen: ' . $e->getMessage()
-            ]);
+                'message' => 'Datenbankverbindung fehlgeschlagen: ' . $e->getMessage() // Fehlermeldung, falls Verbindung fehlschlägt
+            ])
             exit;
         }
     }
