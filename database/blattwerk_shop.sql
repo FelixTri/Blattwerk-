@@ -1,12 +1,9 @@
-CREATE DATABASE IF NOT EXISTS blattwerk_shop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE blattwerk_shop;
-
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Erstellungszeit: 19. Mai 2025 um 21:53
+-- Erstellungszeit: 21. Mai 2025 um 21:11
 -- Server-Version: 10.4.28-MariaDB
 -- PHP-Version: 8.2.4
 
@@ -91,7 +88,9 @@ INSERT INTO `invoices` (`id`, `order_id`, `invoice_number`, `created_at`) VALUES
 (5, 10, 'RW2025-000005', '2025-04-26 20:58:16'),
 (6, 12, 'RW2025-000006', '2025-04-26 21:09:37'),
 (7, 13, 'RW2025-000007', '2025-04-27 21:06:47'),
-(8, 18, 'RW2025-000008', '2025-05-19 20:56:41');
+(8, 18, 'RW2025-000008', '2025-05-19 20:56:41'),
+(9, 3, 'RW2025-000009', '2025-05-21 19:41:55'),
+(10, 19, 'RW2025-000010', '2025-05-21 20:22:55');
 
 -- --------------------------------------------------------
 
@@ -103,32 +102,39 @@ CREATE TABLE `orders` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `payment_used` varchar(50) DEFAULT NULL,
-  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `voucher_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Daten für Tabelle `orders`
 --
 
-INSERT INTO `orders` (`id`, `user_id`, `payment_used`, `created_at`) VALUES
-(1, 1, NULL, '2025-04-18 17:37:26'),
-(2, 1, NULL, '2025-04-18 18:00:10'),
-(3, 5, NULL, '2025-04-25 17:42:04'),
-(4, 1, NULL, '2025-04-26 15:46:29'),
-(5, 1, NULL, '2025-04-26 15:56:32'),
-(6, 1, NULL, '2025-04-26 16:04:24'),
-(7, 1, NULL, '2025-04-26 16:27:00'),
-(8, 1, NULL, '2025-04-26 17:15:33'),
-(9, 1, NULL, '2025-04-26 17:20:10'),
-(10, 1, 'stored', '2025-04-26 20:58:09'),
-(11, 1, 'stored', '2025-04-26 21:03:54'),
-(12, 1, 'stored', '2025-04-26 21:09:35'),
-(13, 1, 'stored', '2025-04-27 21:06:43'),
-(14, 1, 'GUTSCHEIN:61200', '2025-05-19 17:20:10'),
-(15, 1, 'stored', '2025-05-19 19:21:19'),
-(16, 1, 'stored', '2025-05-19 20:23:48'),
-(17, 1, 'stored', '2025-05-19 20:29:41'),
-(18, 1, 'CUSTOM:1234 1412 1242 1241', '2025-05-19 20:31:47');
+INSERT INTO `orders` (`id`, `user_id`, `payment_used`, `created_at`, `voucher_id`) VALUES
+(1, 1, NULL, '2025-04-18 17:37:26', NULL),
+(2, 1, NULL, '2025-04-18 18:00:10', NULL),
+(3, 5, NULL, '2025-04-25 17:42:04', NULL),
+(4, 1, NULL, '2025-04-26 15:46:29', NULL),
+(5, 1, NULL, '2025-04-26 15:56:32', NULL),
+(6, 1, NULL, '2025-04-26 16:04:24', NULL),
+(7, 1, NULL, '2025-04-26 16:27:00', NULL),
+(8, 1, NULL, '2025-04-26 17:15:33', NULL),
+(9, 1, NULL, '2025-04-26 17:20:10', NULL),
+(10, 1, 'stored', '2025-04-26 20:58:09', NULL),
+(11, 1, 'stored', '2025-04-26 21:03:54', NULL),
+(12, 1, 'stored', '2025-04-26 21:09:35', NULL),
+(13, 1, 'stored', '2025-04-27 21:06:43', NULL),
+(14, 1, 'GUTSCHEIN:61200', '2025-05-19 17:20:10', NULL),
+(15, 1, 'stored', '2025-05-19 19:21:19', NULL),
+(16, 1, 'stored', '2025-05-19 20:23:48', NULL),
+(17, 1, 'stored', '2025-05-19 20:29:41', NULL),
+(18, 1, 'CUSTOM:1234 1412 1242 1241', '2025-05-19 20:31:47', NULL),
+(19, 1, 'stored', '2025-05-21 20:22:52', NULL),
+(20, 1, 'stored', '2025-05-21 20:44:14', NULL),
+(21, 1, 'stored', '2025-05-21 20:50:16', NULL),
+(22, 1, 'stored', '2025-05-21 20:58:38', NULL),
+(23, 1, 'stored', '2025-05-21 21:01:13', NULL),
+(24, 1, 'stored', '2025-05-21 21:05:08', NULL);
 
 -- --------------------------------------------------------
 
@@ -170,8 +176,15 @@ INSERT INTO `order_items` (`order_id`, `product_id`, `quantity`) VALUES
 (15, 2, 2),
 (15, 3, 1),
 (16, 3, 1),
-(17, 2, 1),
-(18, 1, 1);
+(18, 1, 1),
+(19, 7, 1),
+(20, 7, 1),
+(21, 4, 1),
+(21, 7, 1),
+(21, 3, 1),
+(22, 7, 1),
+(23, 3, 1),
+(24, 7, 1);
 
 -- --------------------------------------------------------
 
@@ -197,7 +210,8 @@ INSERT INTO `products` (`id`, `name`, `description`, `price`, `rating`, `image`,
 (1, 'Monstera Deliciosa', 'Tropische Zimmerpflanze mit großen Blättern.', 29.99, 4.5, 'productpictures/monstera.jpg', 1),
 (2, 'Basilikum', 'Frisches Basilikum im Topf.', 3.49, 4.0, 'productpictures/basilikum.jpg', 2),
 (3, 'Aloe Vera', 'Pflegeleichte Sukkulente mit heilender Wirkung.', 12.90, 4.8, 'productpictures/aloe.jpg', 1),
-(4, 'Kaktus', 'Kleiner Deko-Kaktus mit Blüte.', 9.51, 3.9, 'productpictures/kaktus.jpg', 3);
+(4, 'Kaktus', 'Kleiner Deko-Kaktus mit Blüte.', 9.51, 3.9, 'productpictures/kaktus.jpg', 3),
+(7, 'Bananenpalme', 'Hübsche tropische Bananenpalme', 39.99, 0.0, '682e02b66727a_Bananenpalme.jpg', 1);
 
 -- --------------------------------------------------------
 
@@ -216,7 +230,7 @@ CREATE TABLE `saved_cart` (
 --
 
 INSERT INTO `saved_cart` (`user_id`, `product_id`, `quantity`) VALUES
-(1, 2, 3);
+(1, 7, 1);
 
 -- --------------------------------------------------------
 
@@ -245,7 +259,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `salutation`, `first_name`, `last_name`, `address`, `postal_code`, `city`, `email`, `username`, `password`, `payment_info`, `role`, `active`) VALUES
-(1, 'Herr', 'Christoph', 'Bout', 'Krafft-Ebinggasse 4', '1140', 'Wien', 'boutchristoph@gmail.com', 'wi23b005', '$2y$10$a5mEspqKZQeJaw2dfe/oreI.zZM0lnOSzA/N6zoNd34kdyweyP7qG', 'AT22 0000 0000 0000', 'user', 1),
+(1, 'Herr', 'Christoph', 'Bout', 'Krafft-Ebinggasse 4', '1143', 'Wien', 'boutchristoph@gmail.com', 'wi23b005', '$2y$10$a5mEspqKZQeJaw2dfe/oreI.zZM0lnOSzA/N6zoNd34kdyweyP7qG', 'AT22 0000 0000 0003', 'user', 1),
 (3, 'Herr', 'Christoph', 'Bout', 'Krafft-Ebinggase 4', '1140', 'Wien', 'wi23b005@technikum-wien.at', 'wi23b005_01', '$2y$10$G4uRa8k/OE2F8APgiXH.g.0A2Bsbki1KW66MC9wecvLyvLBksNJ3S', '', 'user', 1),
 (5, 'Herr', 'Admin', 'Admin', 'Aidmin', '0000', 'Admin', 'admin@admin.com', 'admin', '$2y$10$YWsan0hoEPPOABlfjfUqzeIXqJVt0XdpLbLBbcQoUuKcoBJHpaz5W', '', 'admin', 1),
 (6, 'Herr', 'User', 'User', 'User', '0000', 'User', 'user@user.com', 'user', '$2y$10$3qkPY0YOjuhWc/dVmmo16OwKgXs1QDjkdVyqBP929DQLHJRMQuWym', '', 'user', 1);
@@ -311,7 +325,8 @@ ALTER TABLE `invoices`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_user_id` (`user_id`) USING BTREE;
+  ADD KEY `fk_user_id` (`user_id`) USING BTREE,
+  ADD KEY `fk_orders_voucher_id` (`voucher_id`);
 
 --
 -- Indizes für die Tabelle `order_items`
@@ -369,19 +384,19 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT für Tabelle `invoices`
 --
 ALTER TABLE `invoices`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT für Tabelle `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT für Tabelle `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT für Tabelle `users`
@@ -411,6 +426,13 @@ ALTER TABLE `cart_items`
 --
 ALTER TABLE `invoices`
   ADD CONSTRAINT `fk_invoices_orders` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints der Tabelle `orders`
+--
+ALTER TABLE `orders`
+  ADD CONSTRAINT `fk_orders_voucher` FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_orders_voucher_id` FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints der Tabelle `products`
