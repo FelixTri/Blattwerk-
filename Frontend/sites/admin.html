@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-..." crossorigin="anonymous">
     <title>Blattwerk – Adminbereich</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <script defer src="../js/layout.js"></script>
     <script defer src="../js/test.js"></script>
@@ -16,140 +16,83 @@
     <div id="navbar-placeholder"></div>
     <main class="container py-5">
 
-        <!-- Toggle Button für Produktverwaltung -->
-        <button class="btn btn-secondary mb-3 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#product-management-section" aria-expanded="false" aria-controls="product-management-section">
-            Produktverwaltung ein-/ausklappen
-        </button>
+        <!-- Steuerbuttons -->
+        <div class="mb-4">
+            <button class="btn btn-secondary me-2" type="button" data-bs-toggle="collapse" data-bs-target="#product-management-section">Produktverwaltung ein-/ausklappen</button>
+            <button class="btn btn-secondary me-2" type="button" data-bs-toggle="collapse" data-bs-target="#customer-management-section">Kundenverwaltung ein-/ausklappen</button>
+            <button class="btn btn-secondary me-2" type="button" data-bs-toggle="collapse" data-bs-target="#voucher-management-section">Gutscheinverwaltung ein-/ausklappen</button>
+            <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#order-management-section">Bestellungen ein-/ausklappen</button>
+        </div>
 
-        <button class="btn btn-secondary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#customer-management-section" aria-expanded="false" aria-controls="customer-management">
-          Kundenverwaltung ein-/ausklappen
-        </button>
-
-        <button class="btn btn-secondary mb-3 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#voucher-management-section" aria-expanded="false" aria-controls="product-management-section">
-            Gutscheinverwaltung ein-/ausklappen
-        </button>
-
+        <!-- Produktverwaltung -->
         <div id="product-management-section" class="collapse">
             <h2>Produktverwaltung</h2>
-
-            <!-- Listenbereich -->
             <div id="product-list"></div>
-
-            <!-- Button zum Anlegen -->
             <button id="create-product" class="btn btn-primary mb-3">Neues Produkt anlegen</button>
-
-            <!-- Platzhalter für Formular -->
             <div id="form-placeholder" style="display:none;">
               <form id="product-form" enctype="multipart/form-data" class="border p-4 rounded bg-light">
                 <input type="hidden" name="id" />
-                <div class="mb-3">
-                  <label class="form-label">Name:</label>
-                  <input type="text" name="name" class="form-control" required>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label">Beschreibung:</label>
-                  <textarea name="description" class="form-control" rows="3"></textarea>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label">Preis (€):</label>
-                  <input type="number" name="price" class="form-control" step="0.01" required>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label">Kategorie:</label>
-                  <select name="category_id" class="form-select" required>
-                    <option value="">Bitte wählen</option>
-                  </select>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label">Bild:</label>
-                  <input type="file" name="image" accept="image/*" class="form-control">
-                </div>
-
+                <div class="mb-3"><label class="form-label">Name:</label><input type="text" name="name" class="form-control" required></div>
+                <div class="mb-3"><label class="form-label">Beschreibung:</label><textarea name="description" class="form-control" rows="3"></textarea></div>
+                <div class="mb-3"><label class="form-label">Preis (€):</label><input type="number" name="price" class="form-control" step="0.01" required></div>
+                <div class="mb-3"><label class="form-label">Kategorie:</label><select name="category_id" class="form-select" required><option value="">Bitte wählen</option></select></div>
+                <div class="mb-3"><label class="form-label">Bild:</label><input type="file" name="image" accept="image/*" class="form-control"></div>
                 <button type="submit" class="btn btn-success">Speichern</button>
               </form>
             </div>
         </div>
-        
+
+        <!-- Kundenverwaltung -->
         <div id="customer-management-section" class="collapse">
-          <h2>Kundenverwaltung</h2>
-          <table class="table table-hover" id="customer-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>E-Mail</th>
-                <th>Status</th>
-                <th>Aktionen</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-          <div id="order-details" class="mt-4" style="display:none;">
-            <h3>Bestellungen von <span id="cust-name"></span></h3>
-            <table class="table" id="orders-table">
-              <thead>
-                <tr>
-                  <th>Bestell-Nr.</th>
-                  <th>Datum</th>
-                  <th>Gesamt (€)</th>
-                  <th>Aktionen</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
+            <h2>Kundenverwaltung</h2>
+            <table class="table table-hover" id="customer-table">
+                <thead><tr><th>ID</th><th>Name</th><th>E-Mail</th><th>Status</th><th>Aktionen</th></tr></thead>
+                <tbody></tbody>
             </table>
-            
-          </div>
+            <div id="order-details" class="mt-4" style="display:none;">
+                <h3>Bestellungen von <span id="cust-name"></span></h3>
+                <table class="table" id="orders-table">
+                    <thead><tr><th>Bestell-Nr.</th><th>Datum</th><th>Gesamt (€)</th><th>Aktionen</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
 
+        <!-- Gutscheinverwaltung -->
         <div id="voucher-management-section" class="collapse">
-        <!-- Gutschein erstellen -->
-        <section>
-          <h2>Gutscheine erstellen</h2>
-          <form id="voucherForm">
-            <div class="mb-3">
-              <label for="amount" class="form-label">Gutscheinbetrag (€):</label>
-              <input type="number" id="amount" name="amount" min="1" class="form-control" required>
-            </div>
+            <section>
+                <h2>Gutscheine erstellen</h2>
+                <form id="voucherForm">
+                    <div class="mb-3"><label for="amount" class="form-label">Gutscheinbetrag (€):</label><input type="number" id="amount" name="amount" min="1" class="form-control" required></div>
+                    <div class="mb-3"><label for="expires" class="form-label">Gültig bis:</label><input type="date" id="expires" name="expires" class="form-control"></div>
+                    <button type="submit" class="btn btn-primary mb-3">Gutschein erstellen</button>
+                </form>
+                <div id="voucherResult"></div>
+            </section>
+            <section>
+                <h2>Gutscheine Übersicht</h2>
+                <table id="voucher-table" class="table">
+                    <thead><tr><th>ID</th><th>Code</th><th>Betrag (€)</th><th>Status</th><th>Erstellt am</th><th>Gültig bis</th><th>Aktionen</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+        </div>
 
-            <div class="mb-3">
-              <label for="expires" class="form-label">Gültig bis:</label>
-              <input type="date" id="expires" name="expires" class="form-control">
-            </div>
-
-            <button type="submit" class="btn btn-primary mb-3">Gutschein erstellen</button>
-          </form>
-          <div id="voucherResult"></div>
-        </section>
-
-        <!-- Übersicht -->
-        <section>
-          <h2>Gutscheine Übersicht</h2>
-          <table id="voucher-table" class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Code</th>
-                <th>Betrag (€)</th>
-                <th>Status</th>
-                <th>Erstellt am</th>
-                <th>Gültig bis</th> <!-- Neue Spalte -->
-                <th>Aktionen</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Gutscheine dynamisch eingefügt -->
-            </tbody>
-          </table>
-        </section>
-    </div>
+        <!-- Bestellverwaltung -->
+        <div id="order-management-section" class="collapse">
+            <h2>Bestellungen verwalten</h2>
+            <table id="admin-order-table" class="table">
+                <thead><tr><th>Bestell-ID</th><th>Kunde</th><th>Gesamt</th><th>Datum</th><th>Aktionen</th></tr></thead>
+                <tbody id="admin-orders-table-body"></tbody>
+            </table>
+            <div id="admin-order-details" style="display: none;"></div>
+        </div>
     </main>
+
     <div id="footer-placeholder"></div>
     <script src="../js/admin_products.js"></script>
     <script src="../js/admin_customers.js"></script>
     <script src="../js/admin_vouchers.js"></script>
+    <script src="../js/admin_orders.js"></script>
 </body>
 </html>

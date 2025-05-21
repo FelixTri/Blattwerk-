@@ -63,6 +63,8 @@
         <label for="payment_info" class="form-label">Zahlungsinformationen</label>
         <input type="text" id="payment_info" name="payment_info" class="form-control" placeholder="z.B. IBAN, Kreditkarte, PayPal-Mail">
       </div>
+
+    
       <button type="submit" class="btn btn-success">Speichern</button>
 
     </form>
@@ -71,40 +73,32 @@
 
   </div>
 
+  <!-- Passwort bestätigen Modal -->
+  <div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="password-form">
+          <div class="modal-header">
+            <h5 class="modal-title" id="passwordModalLabel">Passwort bestätigen</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="password-input" class="form-label">Bitte gib dein Passwort ein:</label>
+              <input type="password" id="password-input" class="form-control" required autocomplete="current-password">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Bestätigen & Speichern</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer Include -->
   <div id="footer-placeholder"></div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Session-Daten vom Server holen (inkl. payment_info)
-      fetch("../../Backend/logic/requestHandler.php?action=getSessionInfo", {
-        credentials: "include"
-      })
-        .then(res => {
-          if (!res.ok) throw new Error("Keine Session-Daten");
-          return res.json();
-        })
-        .then(user => {
-          if (!user.user_id) {
-            alert("Bitte melde dich zuerst an.");
-            window.location.href = "login.html";
-            return;
-          }
-          // Formularfelder befüllen
-          ['salutation','address','postal_code','city','email','username','payment_info'].forEach(field => {
-            const el = document.getElementById(field);
-            if (el && user[field] !== undefined) {
-              el.value = user[field];
-            }
-          });
-          document.getElementById('username').readOnly = true;
-        })
-        .catch(err => {
-          console.error("Fehler beim Laden deiner Daten:", err);
-          alert("Fehler beim Laden deiner Daten.");
-        });
-    });
-    </script>
-
+  <script defer src="../js/account.js"></script>
 </body>
 </html>

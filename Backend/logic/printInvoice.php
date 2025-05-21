@@ -1,48 +1,126 @@
-<?php // Rechnung erstellen
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-header('Content-Type: text/html; charset=utf-8');
+<?php
 session_start();
-require_once __DIR__ . '/../models/Order.class.php'; // Abrufen der Bestellungsdaten
+require_once __DIR__ . '/../helpers/dbaccess.php';
 
-if (!isset($_SESSION['user_id']) || !isset($_GET['orderId'])) {
-    http_response_code(403);
-    exit('Zugriff verweigert');
+$orderId = (int)($_GET['orderId'] ?? 0);
+if ($orderId <= 0 || !isset($_SESSION['user_id'])) {
+    echo "Ungültiger Zugriff.";
+    exit;
 }
 
-$orderId = (int)$_GET['orderId'];
-$model = new Order();
-// Prüfen und ggf. Invoice-Nummer erzeugen
-$invoiceNumber = $model->getOrCreateInvoiceNumber($orderId);
-// Bestellung und Positionen laden
-$order = $model->findById($orderId, (int)$_SESSION['user_id']);
-if (!$order) {
-    http_response_code(404);
-    exit('Bestellung nicht gefunden');
+try {
+    $pdo = DbAccess::connect();
+
+    // Bestellung & User prüfen
+    $stmt = $pdo->prepare("
+        SELECT o.*, u.username, u.email
+        FROM orders o
+        JOIN users u ON u.id = o.user_id
+        WHERE o.id = ? AND u.id = ?
+    ");
+    $stmt->execute([$orderId, $_SESSION['user_id']]);
+    $order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$order) {
+        echo "Keine Berechtigung oder Bestellung nicht gefunden.";
+        exit;
+    }
+
+    // Artikel laden
+    $itemsStmt = $pdo->prepare("
+        SELECT p.name, oi.quantity, p.price
+        FROM order_items oi
+        JOIN products p ON p.id = oi.product_id
+        WHERE oi.order_id = ?
+    ");
+    $itemsStmt->execute([$orderId]);
+    $items = $itemsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Gutschein laden (falls vorhanden)
+    $voucher = null;
+    if (!empty($order['voucher_id'])) {
+        $vstmt = $pdo->prepare("SELECT code, amount FROM vouchers WHERE id = ?");
+        $vstmt->execute([$order['voucher_id']]);
+        $voucher = $vstmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Gesamtsumme berechnen
+    $subtotal = 0;
+    foreach ($items as $item) {
+        $subtotal += $item['quantity'] * $item['price'];
+    }
+
+    $discount = $voucher ? min($voucher['amount'], $subtotal) : 0;
+    $total = $subtotal - $discount;
+} catch (Exception $e) {
+    echo "Fehler: " . $e->getMessage();
+    exit;
 }
+?>
 
-$userName   = htmlspecialchars($order['first_name'] . ' ' . $order['last_name']);
-$userAddress = nl2br(htmlspecialchars($order['address']));
-$userCity   = htmlspecialchars($order['postal_code'] . ' ' . $order['city']);
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Rechnung</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-5">
+  <h1>Rechnung #<?= htmlspecialchars($order['id']) ?></h1>
+  <p><strong>Datum:</strong> <?= htmlspecialchars($order['created_at']) ?></p>
+  <p><strong>Kunde:</strong> <?= htmlspecialchars($order['username']) ?> (<?= htmlspecialchars($order['email']) ?>)</p>
+
+  <hr>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Produkt</th>
+        <th>Menge</th>
+        <th>Einzelpreis (€)</th>
+        <th>Zwischensumme (€)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($items as $item): ?>
+        <tr>
+          <td><?= htmlspecialchars($item['name']) ?></td>
+          <td><?= $item['quantity'] ?></td>
+          <td><?= number_format($item['price'], 2) ?> €</td>
+          <td><?= number_format($item['quantity'] * $item['price'], 2) ?> €</td>
+        </tr>
+      <?php endforeach; ?>
+    </tbody>
+    <tfoot>
+      <tr>
+        <th colspan="3" class="text-end">Zwischensumme:</th>
+        <td><?= number_format($subtotal, 2) ?> €</td>
+      </tr>
+      <?php if ($voucher): ?>
+      <tr>
+        <th colspan="3" class="text-end">Gutschein (<?= htmlspecialchars($voucher['code']) ?>):</th>
+        <td>-<?= number_format($discount, 2) ?> €</td>
+      </tr>
+      <?php endif; ?>
+      <tr>
+        <td colspan="3" class="text-end"><strong>Gesamt:</strong></td>
+        <td><strong><?= number_format($total, 2, ',', '.') ?> €</strong></td>
+    </tr>
+    <?php if (isset($order['payment_used']) && str_starts_with($order['payment_used'], 'GUTSCHEIN:')): ?>
+        <tr>
+        <td colspan="4" class="text-end text-muted">
+            Hinweis: Es wurde ein Gutschein angewendet (<?= htmlspecialchars($order['payment_used']) ?>)
+        </td>
+        </tr>
+    <?php endif; ?>
+    </tfoot>
+  </table>
 
 
-// Ausgabe als HTML
-header('Content-Type: text/html; charset=utf-8');
-echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Rechnung '.$invoiceNumber.'</title>';
-echo '<style>body{font-family:Arial,sans-serif;}table{width:100%;border-collapse:collapse;}td,th{border:1px solid #ccc;padding:8px;}</style>';
-echo '</head><body>';
-echo '<h1>Rechnung '.$invoiceNumber.'</h1>';
-echo '<p>' . $userName . '</p>';
-echo '<p>' . $userAddress . '<br>' . $userCity . '</p>';
-echo '<p>Datum: '.date('d.m.Y', strtotime($order['created_at'])).'</p>';
-echo '<h2>Positionen</h2><table><tr><th>Artikel</th><th>Menge</th><th>Preis</th></tr>';
-foreach($order['items'] as $item) {
-    echo '<tr>';
-    echo '<td>'.htmlspecialchars($item['name']).'</td>';
-    echo '<td>'.$item['quantity'].'</td>';
-    echo '<td>'.number_format($item['price'],2,',','.').' €</td>';
-    echo '</tr>';
-}
-echo '</table>';
-echo '<p><strong>Gesamt: '.number_format(array_sum(array_column($order['items'],'price')) * 1,2,',','.').' €</strong></p>';
-echo '</body></html>';
+<?php if (!empty($order['voucher']['code'])): ?>
+        <p><strong>Hinweis:</strong> Gutschein <code><?= htmlspecialchars($order['voucher']['code']) ?></code> wurde eingelöst (ursprünglicher Wert: <?= number_format($order['voucher']['amount'], 2) ?> €).</p>
+<?php endif; ?>
+
+  <p>Vielen Dank für Ihren Einkauf!</p>
+</body>
+</html>

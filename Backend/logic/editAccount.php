@@ -1,77 +1,61 @@
 <?php
-// Accountdaten aktualisieren
-// Datei wird aufgerufen, wenn der Benutzer seine Accountdaten aktualisiert
-ini_set('display_errors', 0);
-error_reporting(0);
-header('Content-Type: application/json');
 session_start();
+header('Content-Type: application/json');
+require_once(__DIR__ . '/../helpers/dbaccess.php');
 
-require_once __DIR__ . '/../config/dbaccess.php'; // DB-Zugriff
+$pdo = DbAccess::connect();
 
-if (!isset($_SESSION['user_id'])) {
-    http_response_code(403);
-    echo json_encode(['success'=>false,'message'=>'Nicht eingeloggt']);
-    exit;
+// Eingabedaten als JSON lesen
+$input = json_decode(file_get_contents('php://input'), true);
+$userId = $_SESSION['user_id'] ?? null;
+
+if (!$userId) {
+  echo json_encode(['success' => false, 'message' => 'Nicht angemeldet.']);
+  exit;
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
-if (!$data || !is_array($data)) {
-    http_response_code(400);
-    echo json_encode(['success'=>false,'message'=>'Ungültige Daten']);
+$requiredFields = ['salutation', 'address', 'postal_code', 'city', 'email', 'password'];
+foreach ($requiredFields as $f) {
+  if (!isset($input[$f]) || trim($input[$f]) === '') {
+    echo json_encode(['success' => false, 'message' => "Feld '$f' fehlt oder ist leer."]);
     exit;
+  }
 }
 
-try {
-    $pdo = DbAccess::connect();
+// Passwort validieren
+$stmt = $pdo->prepare("SELECT password FROM users WHERE id = ?");
+$stmt->execute([$userId]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Accountdaten updaten
-    $stmt = $pdo->prepare("
-        UPDATE users
-           SET salutation    = :salutation,
-               address       = :address,
-               postal_code   = :postal_code,
-               city          = :city,
-               email         = :email,
-               payment_info  = :payment_info
-         WHERE id = :id
-    ");
-    $stmt->execute([
-        ':salutation'   => $data['salutation']   ?? '',
-        ':address'      => $data['address']      ?? '',
-        ':postal_code'  => $data['postal_code']  ?? '',
-        ':city'         => $data['city']         ?? '',
-        ':email'        => $data['email']        ?? '',
-        ':payment_info' => $data['payment_info'] ?? '',
-        ':id'           => $_SESSION['user_id']
-    ]);
+if (!$user || !password_verify($input['password'], $user['password'])) {
+  echo json_encode(['success' => false, 'message' => 'Falsches Passwort.']);
+  exit;
+}
 
-    // Frisch gespeicherte Daten zurückliefern
-    $stmt2 = $pdo->prepare("
-        SELECT 
-            id,
-            username,
-            salutation,
-            address,
-            postal_code,
-            city,
-            email,
-            payment_info,
-            role,
-            active
-          FROM users
-         WHERE id = ?
-    ");
-    $stmt2->execute([ $_SESSION['user_id'] ]);
-    $user = $stmt2->fetch(PDO::FETCH_ASSOC) ?: [];
+// Update der Daten
+$stmt = $pdo->prepare("
+  UPDATE users SET
+    salutation = :salutation,
+    address = :address,
+    postal_code = :postal_code,
+    city = :city,
+    email = :email,
+    payment_info = :payment_info
+  WHERE id = :id
+");
 
-    echo json_encode([
-        'success' => true,
-        'user'    => $user
-    ]);
-} catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Datenbank-Fehler: ' . $e->getMessage()
-    ]);
+$success = $stmt->execute([
+  'salutation'   => $input['salutation'],
+  'address'      => $input['address'],
+  'postal_code'  => $input['postal_code'],
+  'city'         => $input['city'],
+  'email'        => $input['email'],
+  'payment_info' => $input['payment_info'] ?? '',
+  'id'           => $userId
+]);
+
+if ($success) {
+  echo json_encode(['success' => true]);
+} else {
+  echo json_encode(['success' => false, 'message' => 'Fehler beim Speichern.']);
 }

@@ -337,6 +337,51 @@ switch ($action) { // Aktionen basierend auf dem Parameter 'action'
         echo json_encode(['success' => true, 'active' => $newAct]);
         break;
 
+        
+    // Bestellungen aller Nutzer (Adminbereich)
+    case 'getAllOrders':
+        $pdo = DbAccess::connect();
+        $stmt = $pdo->prepare("
+            SELECT 
+                o.id AS order_id,
+                CONCAT(u.salutation, ' ', u.first_name, ' ', u.last_name) AS customer_name,
+                o.created_at AS date,
+                SUM(oi.quantity * p.price) AS total
+            FROM orders o
+            JOIN users u ON u.id = o.user_id
+            JOIN order_items oi ON oi.order_id = o.id
+            JOIN products p ON p.id = oi.product_id
+            GROUP BY o.id
+            ORDER BY o.created_at DESC
+        ");
+        $stmt->execute();
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+        break;
+
+        // Einzelnen Artikel aus Bestellung entfernen (Admin)
+        case 'removeOrderItem':
+            $orderId = (int)($_POST['orderId'] ?? 0);
+            $productId = (int)($_POST['productId'] ?? 0);
+    
+            if ($orderId <= 0 || $productId <= 0) {
+                echo json_encode(['success' => false, 'message' => 'Ungültige Daten']);
+                break;
+            }
+    
+            $pdo = DbAccess::connect();
+    
+            $stmt = $pdo->prepare("DELETE FROM order_items WHERE order_id = ? AND product_id = ?");
+            $stmt->execute([$orderId, $productId]);
+    
+            if ($stmt->rowCount() > 0) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Kein Artikel entfernt']);
+            }
+    
+            break;
+
+    
     // Fallback bei unbekannter Aktion
     default:
         echo json_encode(['error' => 'Ungültige Aktion']);
